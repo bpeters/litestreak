@@ -8,6 +8,10 @@ app.get('/', function(req, res){
   res.sendfile('views/index.html');
 });
 
+app.get('/edit', function(req, res){
+  res.sendfile('game/weltmeister.html');
+});
+
 app.use(express.static(path.join(__dirname, '/game')));
 app.use(express.static(path.join(__dirname, '/public')));
 
@@ -17,8 +21,34 @@ app.use(function(req, res, next) {
     next(err);
 });
 
+var playerlocation = 0;
+var playerlist = [];
+
 io.on('connection', function(socket){
-  console.log('a user connected');
+
+  socket.on('initializeplayer', function (newplayername) {
+    socket.clientname = newplayername;
+    playerlist.push(newplayername);
+    io.sockets.emit('addplayer',playerlist,newplayername);
+    console.log(newplayername + " joined")
+  });
+
+  socket.on('recievedata', function (positionx,positiony,currentanimation,gamename) {
+    socket.broadcast.emit('playermove', positionx,positiony,currentanimation,gamename);
+  });
+
+  socket.on('disconnect', function(){
+    console.log(socket.clientname + " has left");
+    delete playerlist[socket.clientname];
+    for(var i in playerlist) {
+      if(playerlist[i] == socket.clientname) {
+        playerlist.splice(i, 1);
+      }
+    }
+    socket.broadcast.emit('message',socket.clientname);
+    socket.broadcast.emit('netreplayer',playerlist);
+  });
+
 });
 
 http.listen(8080, function(){

@@ -45,7 +45,8 @@ MyGame = ig.Game.extend({
     // Draw all entities and backgroundMaps
     this.parent();
 
-    var players = this.getEntitiesByType(EntityPlayer);
+    var players = this.getEntitiesByType(EntityOtherplayer);
+    var player = this.getEntitiesByType( EntityPlayer )[0];
     var ctx = ig.system.context;
     var s = ig.system.scale;
     var x,y,size;
@@ -55,6 +56,7 @@ MyGame = ig.Game.extend({
                  this.minimap.y,
                  this.minimap.x+this.minimap.size,
                  this.minimap.y+this.minimap.size);
+    // Draw Other Players on MiniMap
     for (i=0;i<players.length;i++) {
         x = players[i].pos.x * s / this.minimap.c +this.minimap.x;
         y = players[i].pos.y * s / this.minimap.c +this.minimap.y;
@@ -62,9 +64,14 @@ MyGame = ig.Game.extend({
         ctx.fillStyle = "rgb(0,0,0)";
         ctx.fillRect(x,y,size,size);
     }
+    // Draw Client Player on MiniMap
+    x = player.pos.x * s / this.minimap.c +this.minimap.x;
+    y = player.pos.y * s / this.minimap.c +this.minimap.y;
+    size = player.size.x * s / this.minimap.c;
+    ctx.fillStyle = "rgb(0,0,0)";
+    ctx.fillRect(x,y,size,size);
     ctx.restore();
 
-    var player = this.getEntitiesByType( EntityPlayer )[0];
     this.font.draw( "H " + player.health, 10, 340 );
     this.font.draw( "S " + player.shield, 10, 370 );
 

@@ -39,7 +39,16 @@ ig.module(
     },
 
     update: function() {
-      // Stat Check
+
+      // Shooting
+      if( ig.input.pressed('shoot1') ) { //Basic shoot command
+        var mx = (ig.input.mouse.x + ig.game.screen.x); //Figures out the x coord of the mouse in the entire world
+        var my = (ig.input.mouse.y + ig.game.screen.y); //Figures out the y coord of the mouse in the entire world
+        var r = Math.atan2(my-this.pos.y, mx-this.pos.x); //Gives angle in radians from player's location to the mouse location, assuming directly right is 0
+        var settings = {angle: r};
+        this.messagebox = this.messagebox + "mouse click 1 @ " + r + "\n";
+        ig.game.spawnEntity( EntityBullet, this.pos.x, this.pos.y, settings); //Nothing to special here, just make sure you pass the angle we calculated in
+      }
 
       // Movement
       // If the the input state is left and not right (ismove != 3).
@@ -460,5 +469,44 @@ ig.module(
 
   });
 
+  // Bullet
+  EntityBullet = ig.Entity.extend({
+
+    // Set some of the properties
+    collides: ig.Entity.COLLIDES.PASSIVE,
+    type: ig.Entity.TYPE.NONE,
+    checkAgainst: ig.Entity.TYPE.B,
+
+    dmg: 4,
+    desiredVel: 100,
+
+    init: function( x, y, settings ) {
+      this.size.x = this.dmg;
+      this.size.y = this.dmg;
+
+      var vely = Math.sin(settings.angle) * this.desiredVel;
+      var velx =  Math.cos(settings.angle) * this.desiredVel;
+
+      this.maxVel.x = this.vel.x = this.accel.x = velx;
+      this.maxVel.y = this.vel.y = this.accel.y = vely;
+
+      this.parent( x, y, settings );
+    },
+
+    update: function() {
+
+        this.parent();
+    },
+
+    draw: function() {
+      ig.system.context.fillStyle = "rgb(200,0,0)";
+      ig.system.context.beginPath();
+      ig.system.context.fillRect(this.pos.x, this.pos.y, this.size.x, this.size.y);
+      ig.system.context.closePath();
+      ig.system.context.fill();
+      this.parent();
+    }
+
+  });
 
 });

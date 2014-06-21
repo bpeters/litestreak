@@ -26,6 +26,8 @@ MyGame = ig.Game.extend({
     ig.input.bind( ig.KEY.S, 'down' );
     ig.input.bind( ig.KEY.A, 'left' );
     ig.input.bind( ig.KEY.D, 'right' );
+    ig.input.bind( ig.KEY.MOUSE1, 'shoot1');
+    ig.input.bind( ig.KEY.MOUSE2, 'shoot2');
     this.loadLevel( LevelGameLevel );
     this.spawnEntity(EntityPlayer, 400, 400);
   },

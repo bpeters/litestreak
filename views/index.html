@@ -34,6 +34,10 @@
       }
     });
 
+    socket.on('playershoot', function (positionx,positiony,angle) {
+      ig.game.spawnEntity( EntityNetbullet, positionx, positiony, {angle: angle} );
+    });
+
     socket.on('message', function (data) {
       var player = ig.game.getEntitiesByType( EntityPlayer )[0];
       if(player) {

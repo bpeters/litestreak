@@ -30,11 +30,17 @@ io.on('connection', function(socket){
     socket.clientname = newplayername;
     playerlist.push(newplayername);
     io.sockets.emit('addplayer',playerlist,newplayername);
-    console.log(newplayername + " joined")
+    console.log(newplayername + " joined");
   });
 
-  socket.on('recievedata', function (positionx,positiony,currentanimation,gamename) {
-    socket.broadcast.emit('playermove', positionx,positiony,currentanimation,gamename);
+  socket.on('recievedata', function (action,data) {
+    if (action == 'move') {
+      socket.broadcast.emit('playermove', data.positionx,data.positiony,data.currentanimation,data.gamename);
+      console.log(Math.round(data.positionx) + " - " + Math.round(data.positiony) + " - " + data.currentanimation + " - " + data.gamename);
+    } else if (action == 'shoot') {
+      socket.broadcast.emit('playershoot', data.positionx,data.positiony,data.angle);
+      console.log(Math.round(data.positionx) + " - " + Math.round(data.positiony) + " - " + data.angle);
+    }
   });
 
   socket.on('disconnect', function(){

@@ -40,16 +40,20 @@ ig.module(
     update: function() {
 
       // Shooting
-      if( ig.input.pressed('shoot1') ) { //Basic shoot command
-        var mx = (ig.input.mouse.x + ig.game.screen.x); //Figures out the x coord of the mouse in the entire world
-        var my = (ig.input.mouse.y + ig.game.screen.y); //Figures out the y coord of the mouse in the entire world
-        var r = Math.atan2(my-this.pos.y, mx-this.pos.x); //Gives angle in radians from player's location to the mouse location, assuming directly right is 0
-        var settings = {angle: r};
-        ig.game.spawnEntity( EntityBullet, this.pos.x, this.pos.y, settings); //Nothing to special here, just make sure you pass the angle we calculated in
+      if( ig.input.pressed('shoot1') ) {
+        var mx = (ig.input.mouse.x + ig.game.screen.x);
+        var my = (ig.input.mouse.y + ig.game.screen.y);
+        var r = Math.atan2(my-this.pos.y, mx-this.pos.x);
+        ig.game.spawnEntity( EntityBullet, this.pos.x, this.pos.y, {angle: r});
+        socket.emit('recievedata','shoot',{
+          positionx: this.pos.x,
+          positiony: this.pos.y,
+          angle: r,
+          gamename: this.gamename
+        });
       }
 
       // Movement
-      // If the the input state is left and not right (ismove != 3).
       if (ig.input.state('left') && ismove != 3) {
         if (ig.input.state('up')) {
           currentanimation = 8;
@@ -59,13 +63,10 @@ ig.module(
 
         } else {
           currentanimation = 7;
-
-          // Set is Moving Exactly to left.
           ismove = 7;
 
         }
 
-        // If the the input state is right and not left (ismove != 7).
       } else if (ig.input.state('right') && ismove != 7) {
         if (ig.input.state('up')) {
           currentanimation = 2;
@@ -76,8 +77,6 @@ ig.module(
         } else {
           this.currentAnim = this.anims.right;
           currentanimation = 3;
-
-          // Set is Moving Exactly to right.
           ismove = 3;
         }
       } else if (ig.input.state('down') && ismove != 1) {
@@ -89,8 +88,6 @@ ig.module(
 
         } else {
           currentanimation = 5;
-
-          // Set is Moving Exactly to down.
           ismove = 5;
         }
 
@@ -103,8 +100,6 @@ ig.module(
 
         } else {
           currentanimation = 1;
-
-          // Set is Moving Exactly to up.
           ismove = 1;
         }
 
@@ -145,54 +140,101 @@ ig.module(
         this.vel.x = 0;
         this.vel.y = -this.speed;
         this.direction = 1;
+        socket.emit('recievedata','move',{
+          positionx: this.pos.x,
+          positiony: this.pos.y,
+          currentanimation: currentanimation,
+          gamename: this.gamename
+        });
         break;
 
       case 2:
         this.vel.x = +this.speed;
         this.vel.y = -this.speed;
         this.direction = 2;
+        socket.emit('recievedata','move',{
+          positionx: this.pos.x,
+          positiony: this.pos.y,
+          currentanimation: currentanimation,
+          gamename: this.gamename
+        });
         break;
 
       case 3:
         this.vel.x = +this.speed;
         this.vel.y = 0;
         this.direction = 3;
+        socket.emit('recievedata','move',{
+          positionx: this.pos.x,
+          positiony: this.pos.y,
+          currentanimation: currentanimation,
+          gamename: this.gamename
+        });
         break;
 
       case 4:
         this.vel.x = +this.speed;
         this.vel.y = +this.speed;
         this.direction = 4;
+        socket.emit('recievedata','move',{
+          positionx: this.pos.x,
+          positiony: this.pos.y,
+          currentanimation: currentanimation,
+          gamename: this.gamename
+        });
         break;
 
       case 5:
         this.vel.x = 0;
         this.vel.y = +this.speed;
         this.direction = 5;
+        socket.emit('recievedata','move',{
+          positionx: this.pos.x,
+          positiony: this.pos.y,
+          currentanimation: currentanimation,
+          gamename: this.gamename
+        });
         break;
 
       case 6:
         this.vel.x = -this.speed;
         this.vel.y = +this.speed;
         this.direction = 6;
+        socket.emit('recievedata','move',{
+          positionx: this.pos.x,
+          positiony: this.pos.y,
+          currentanimation: currentanimation,
+          gamename: this.gamename
+        });
         break;
 
       case 7:
         this.vel.x = -this.speed;
         this.vel.y = 0;
         this.direction = 7;
+        socket.emit('recievedata','move',{
+          positionx: this.pos.x,
+          positiony: this.pos.y,
+          currentanimation: currentanimation,
+          gamename: this.gamename
+        });
         break;
 
       case 8:
         this.vel.x = -this.speed;
         this.vel.y = -this.speed;
         this.direction = 8;
+        socket.emit('recievedata','move',{
+          positionx: this.pos.x,
+          positiony: this.pos.y,
+          currentanimation: currentanimation,
+          gamename: this.gamename
+        });
         break;
       }
 
       if(this.nettimer < 1) {
         this.nettimer = 5;
-        socket.emit('recievedata',this.pos.x,this.pos.y,currentanimation,this.gamename);
       }
       this.nettimer = this.nettimer - 1;
 
@@ -327,8 +369,6 @@ ig.module(
     init: function( x, y, settings ) {
       this.size.x = this.health;
       this.size.y = this.health;
-
-      // Call the parent constructor
       this.parent( x, y, settings );
     },
 
@@ -338,10 +378,6 @@ ig.module(
     },
 
     update: function() {
-      // Stat Check
-
-      // Call the parent update() method to move the entity
-      // according to its physics
       this.parent();
     },
 
@@ -440,7 +476,7 @@ ig.module(
       ig.system.context.fillStyle = gradient;
       ig.system.context.beginPath();
       ig.system.context.arc(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, (this.shield + this.health) - 32, 0, 2 * Math.PI, false);
-      ig.system.context.closePath();  // added
+      ig.system.context.closePath();
       ig.system.context.fill();
       ig.system.context.stroke();
       ig.system.context.globalAlpha = 1;
@@ -453,7 +489,44 @@ ig.module(
   // Bullet
   EntityBullet = ig.Entity.extend({
 
-    // Set some of the properties
+    collides: ig.Entity.COLLIDES.PASSIVE,
+    type: ig.Entity.TYPE.NONE,
+    checkAgainst: ig.Entity.TYPE.A,
+
+    dmg: 4,
+    desiredVel: 300,
+
+    init: function( x, y, settings ) {
+      this.size.x = this.dmg;
+      this.size.y = this.dmg;
+
+      var vely = Math.sin(settings.angle) * this.desiredVel;
+      var velx =  Math.cos(settings.angle) * this.desiredVel;
+
+      this.maxVel.x = this.vel.x = this.accel.x = velx;
+      this.maxVel.y = this.vel.y = this.accel.y = vely;
+
+      this.parent( x, y, settings );
+    },
+
+    update: function() {
+        this.parent();
+    },
+
+    draw: function() {
+      ig.system.context.fillStyle = "rgb(200,0,0)";
+      ig.system.context.beginPath();
+      ig.system.context.fillRect(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, this.size.x, this.size.y);
+      ig.system.context.closePath();
+      ig.system.context.fill();
+      this.parent();
+    }
+
+  });
+
+  // Enemy Bullet
+  EntityNetbullet = ig.Entity.extend({
+
     collides: ig.Entity.COLLIDES.PASSIVE,
     type: ig.Entity.TYPE.NONE,
     checkAgainst: ig.Entity.TYPE.B,
@@ -475,7 +548,6 @@ ig.module(
     },
 
     update: function() {
-
         this.parent();
     },
 

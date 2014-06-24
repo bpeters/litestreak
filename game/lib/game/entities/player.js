@@ -29,12 +29,11 @@ ig.module(
     walk: 2,
 
     init: function( x, y, settings ) {
-      this.size.x = 32;
-      this.size.y = 32;
+      this.size.x = this.health;
+      this.size.y = this.health;
 
       socket.emit('initializeplayer', this.gamename);
 
-      // Call the parent constructor
       this.parent( x, y, settings );
     },
 
@@ -46,7 +45,6 @@ ig.module(
         var my = (ig.input.mouse.y + ig.game.screen.y); //Figures out the y coord of the mouse in the entire world
         var r = Math.atan2(my-this.pos.y, mx-this.pos.x); //Gives angle in radians from player's location to the mouse location, assuming directly right is 0
         var settings = {angle: r};
-        this.messagebox = this.messagebox + "mouse click 1 @ " + r + "\n";
         ig.game.spawnEntity( EntityBullet, this.pos.x, this.pos.y, settings); //Nothing to special here, just make sure you pass the angle we calculated in
       }
 
@@ -54,15 +52,12 @@ ig.module(
       // If the the input state is left and not right (ismove != 3).
       if (ig.input.state('left') && ismove != 3) {
         if (ig.input.state('up')) {
-          this.currentAnim = this.anims.upleft;
           currentanimation = 8;
 
         } else if (ig.input.state('down')) {
-          this.currentAnim = this.anims.downleft;
           currentanimation = 6;
 
         } else {
-          this.currentAnim = this.anims.left;
           currentanimation = 7;
 
           // Set is Moving Exactly to left.
@@ -73,11 +68,9 @@ ig.module(
         // If the the input state is right and not left (ismove != 7).
       } else if (ig.input.state('right') && ismove != 7) {
         if (ig.input.state('up')) {
-          this.currentAnim = this.anims.upright;
           currentanimation = 2;
 
         } else if (ig.input.state('down')) {
-          this.currentAnim = this.anims.downright;
           currentanimation = 4;
 
         } else {
@@ -89,15 +82,12 @@ ig.module(
         }
       } else if (ig.input.state('down') && ismove != 1) {
         if (ig.input.state('left')) {
-          this.currentAnim = this.anims.downleft;
           currentanimation = 6;
 
         } else if (ig.input.state('right')) {
-          this.currentAnim = this.anims.downright;
           currentanimation = 4;
 
         } else {
-          this.currentAnim = this.anims.down;
           currentanimation = 5;
 
           // Set is Moving Exactly to down.
@@ -106,16 +96,13 @@ ig.module(
 
       } else if (ig.input.state('up') && ismove != 5) {
         if (ig.input.state('left')) {
-          this.currentAnim = this.anims.upleft;
           currentanimation = 8;
 
         } else if (ig.input.state('right')) {
-          this.currentAnim = this.anims.upright;
           currentanimation = 2;
 
         } else {
           currentanimation = 1;
-          this.currentAnim = this.anims.up;
 
           // Set is Moving Exactly to up.
           ismove = 1;
@@ -128,35 +115,27 @@ ig.module(
         currentanimation = 0;
 
         if (this.direction == 1) {
-          this.currentAnim = this.anims.idleup;
           currentanimation = 9;
         }
         if (this.direction == 2) {
-          this.currentAnim = this.anims.idleupright;
           currentanimation = 10;
         }
         if (this.direction == 3) {
-          this.currentAnim = this.anims.idleright;
           currentanimation = 11;
         }
         if (this.direction == 4) {
-          this.currentAnim = this.anims.idledownright;
           currentanimation = 12;
         }
         if (this.direction == 5) {
-          this.currentAnim = this.anims.idledown;
           currentanimation = 13;
         }
         if (this.direction == 6) {
-          this.currentAnim = this.anims.idledownleft;
           currentanimation = 14;
         }
         if (this.direction == 7) {
-          this.currentAnim = this.anims.idleleft;
           currentanimation = 15;
         }
         if (this.direction == 8) {
-          this.currentAnim = this.anims.idleupleft;
           currentanimation = 16;
         }
       }
@@ -217,9 +196,11 @@ ig.module(
       }
       this.nettimer = this.nettimer - 1;
 
-      // Call the parent update() method to move the entity
-      // according to its physics
       this.parent();
+
+      //screen movement
+      ig.game.screen.x = this.pos.x - ig.system.width/2;
+      ig.game.screen.y = this.pos.y - ig.system.height/2;
     },
 
     draw: function() {
@@ -237,7 +218,7 @@ ig.module(
         case 0:
           ig.system.context.fillStyle = "rgb(0,0,0)";
           ig.system.context.beginPath();
-          ig.system.context.arc((this.pos.x + this.size.x/2) - ig.game.screen.x, (this.pos.y + this.size.y/2) - ig.game.screen.y, this.health/2, 0, 2 * Math.PI, false);
+          ig.system.context.arc(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, this.health/2, 0, 2 * Math.PI, false);
           ig.system.context.closePath();
           ig.system.context.fill();
           break;
@@ -245,7 +226,7 @@ ig.module(
         case 1:
           ig.system.context.fillStyle = "rgb(0,0,0)";
           ig.system.context.beginPath();
-          ig.system.context.arc((this.pos.x + this.size.x/2) - ig.game.screen.x, (this.pos.y + this.size.y/2) - ig.game.screen.y - this.walk, this.health/2, 0, 2 * Math.PI, false);
+          ig.system.context.arc(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y - this.walk, this.health/2, 0, 2 * Math.PI, false);
           ig.system.context.closePath();
           ig.system.context.fill();
           break;
@@ -253,7 +234,7 @@ ig.module(
         case 2:
           ig.system.context.fillStyle = "rgb(0,0,0)";
           ig.system.context.beginPath();
-          ig.system.context.arc((this.pos.x + this.size.x/2) - ig.game.screen.x + this.walk, (this.pos.y + this.size.y/2) - ig.game.screen.y - this.walk, this.health/2, 0, 2 * Math.PI, false);
+          ig.system.context.arc(this.pos.x - ig.game.screen.x + this.walk, this.pos.y - ig.game.screen.y - this.walk, this.health/2, 0, 2 * Math.PI, false);
           ig.system.context.closePath();
           ig.system.context.fill();
           break;
@@ -261,7 +242,7 @@ ig.module(
         case 3:
           ig.system.context.fillStyle = "rgb(0,0,0)";
           ig.system.context.beginPath();
-          ig.system.context.arc((this.pos.x + this.size.x/2) - ig.game.screen.x + this.walk, (this.pos.y + this.size.y/2) - ig.game.screen.y, this.health/2, 0, 2 * Math.PI, false);
+          ig.system.context.arc(this.pos.x - ig.game.screen.x + this.walk, this.pos.y - ig.game.screen.y, this.health/2, 0, 2 * Math.PI, false);
           ig.system.context.closePath();
           ig.system.context.fill();
           break;
@@ -269,7 +250,7 @@ ig.module(
         case 4:
           ig.system.context.fillStyle = "rgb(0,0,0)";
           ig.system.context.beginPath();
-          ig.system.context.arc((this.pos.x + this.size.x/2) - ig.game.screen.x + this.walk, (this.pos.y + this.size.y/2) - ig.game.screen.y + this.walk, this.health/2, 0, 2 * Math.PI, false);
+          ig.system.context.arc(this.pos.x - ig.game.screen.x + this.walk, this.pos.y - ig.game.screen.y + this.walk, this.health/2, 0, 2 * Math.PI, false);
           ig.system.context.closePath();
           ig.system.context.fill();
           break;
@@ -277,7 +258,7 @@ ig.module(
         case 5:
           ig.system.context.fillStyle = "rgb(0,0,0)";
           ig.system.context.beginPath();
-          ig.system.context.arc((this.pos.x + this.size.x/2) - ig.game.screen.x, (this.pos.y + this.size.y/2) - ig.game.screen.y + this.walk, this.health/2, 0, 2 * Math.PI, false);
+          ig.system.context.arc(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y + this.walk, this.health/2, 0, 2 * Math.PI, false);
           ig.system.context.closePath();
           ig.system.context.fill();
           break;
@@ -285,7 +266,7 @@ ig.module(
         case 6:
           ig.system.context.fillStyle = "rgb(0,0,0)";
           ig.system.context.beginPath();
-          ig.system.context.arc((this.pos.x + this.size.x/2) - ig.game.screen.x - this.walk, (this.pos.y + this.size.y/2) - ig.game.screen.y + this.walk, this.health/2, 0, 2 * Math.PI, false);
+          ig.system.context.arc(this.pos.x - ig.game.screen.x - this.walk, this.pos.y - ig.game.screen.y + this.walk, this.health/2, 0, 2 * Math.PI, false);
           ig.system.context.closePath();
           ig.system.context.fill();
           break;
@@ -293,7 +274,7 @@ ig.module(
         case 7:
           ig.system.context.fillStyle = "rgb(0,0,0)";
           ig.system.context.beginPath();
-          ig.system.context.arc((this.pos.x + this.size.x/2) - ig.game.screen.x -this.walk, (this.pos.y + this.size.y/2) - ig.game.screen.y, this.health/2, 0, 2 * Math.PI, false);
+          ig.system.context.arc(this.pos.x - ig.game.screen.x -this.walk, this.pos.y - ig.game.screen.y, this.health/2, 0, 2 * Math.PI, false);
           ig.system.context.closePath();
           ig.system.context.fill();
           break;
@@ -301,7 +282,7 @@ ig.module(
         case 8:
           ig.system.context.fillStyle = "rgb(0,0,0)";
           ig.system.context.beginPath();
-          ig.system.context.arc((this.pos.x + this.size.x/2) - ig.game.screen.x - this.walk, (this.pos.y + this.size.y/2) - ig.game.screen.y - this.walk, this.health/2, 0, 2 * Math.PI, false);
+          ig.system.context.arc(this.pos.x - ig.game.screen.x - this.walk, this.pos.y - ig.game.screen.y - this.walk, this.health/2, 0, 2 * Math.PI, false);
           ig.system.context.closePath();
           ig.system.context.fill();
           break;
@@ -311,13 +292,13 @@ ig.module(
       ig.system.context.globalAlpha = 0.8;
       ig.system.context.strokeStyle = "rgb(0,0,0)";
       ig.system.context.lineWidth = 1;
-      var gradient = ig.system.context.createRadialGradient((this.pos.x + this.size.x/2) - ig.game.screen.x, (this.pos.y + this.size.y/2) - ig.game.screen.y, (this.shield + this.health) - 32, (this.pos.x + this.size.x/2) - ig.game.screen.x, (this.pos.y + this.size.y/2) - ig.game.screen.y, 0);
+      var gradient = ig.system.context.createRadialGradient(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, (this.shield + this.health) - 32, this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, 0);
       gradient.addColorStop(0, "rgba(0, 0, 0, 0.3)");
       gradient.addColorStop(0.5, "rgba(0, 0, 0, 0)");
       ig.system.context.fillStyle = gradient;
       ig.system.context.beginPath();
-      ig.system.context.arc((this.pos.x + this.size.x/2) - ig.game.screen.x, (this.pos.y + this.size.y/2) - ig.game.screen.y, (this.shield + this.health) - 32, 0, 2 * Math.PI, false);
-      ig.system.context.closePath();  // added
+      ig.system.context.arc(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, (this.shield + this.health) - 32, 0, 2 * Math.PI, false);
+      ig.system.context.closePath();
       ig.system.context.fill();
       ig.system.context.stroke();
       ig.system.context.globalAlpha = 1;
@@ -344,8 +325,8 @@ ig.module(
     animation: 1,
 
     init: function( x, y, settings ) {
-      this.size.x = 32;
-      this.size.y = 32;
+      this.size.x = this.health;
+      this.size.y = this.health;
 
       // Call the parent constructor
       this.parent( x, y, settings );
@@ -379,7 +360,7 @@ ig.module(
         case 0:
           ig.system.context.fillStyle = "rgb(0,0,0)";
           ig.system.context.beginPath();
-          ig.system.context.arc((this.pos.x + this.size.x/2) - ig.game.screen.x, (this.pos.y + this.size.y/2) - ig.game.screen.y, this.health/2, 0, 2 * Math.PI, false);
+          ig.system.context.arc(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, this.health/2, 0, 2 * Math.PI, false);
           ig.system.context.closePath();
           ig.system.context.fill();
           break;
@@ -387,7 +368,7 @@ ig.module(
         case 1:
           ig.system.context.fillStyle = "rgb(0,0,0)";
           ig.system.context.beginPath();
-          ig.system.context.arc((this.pos.x + this.size.x/2) - ig.game.screen.x, (this.pos.y + this.size.y/2) - ig.game.screen.y - this.walk, this.health/2, 0, 2 * Math.PI, false);
+          ig.system.context.arc(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y - this.walk, this.health/2, 0, 2 * Math.PI, false);
           ig.system.context.closePath();
           ig.system.context.fill();
           break;
@@ -395,7 +376,7 @@ ig.module(
         case 2:
           ig.system.context.fillStyle = "rgb(0,0,0)";
           ig.system.context.beginPath();
-          ig.system.context.arc((this.pos.x + this.size.x/2) - ig.game.screen.x + this.walk, (this.pos.y + this.size.y/2) - ig.game.screen.y - this.walk, this.health/2, 0, 2 * Math.PI, false);
+          ig.system.context.arc(this.pos.x - ig.game.screen.x + this.walk, this.pos.y - ig.game.screen.y - this.walk, this.health/2, 0, 2 * Math.PI, false);
           ig.system.context.closePath();
           ig.system.context.fill();
           break;
@@ -403,7 +384,7 @@ ig.module(
         case 3:
           ig.system.context.fillStyle = "rgb(0,0,0)";
           ig.system.context.beginPath();
-          ig.system.context.arc((this.pos.x + this.size.x/2) - ig.game.screen.x + this.walk, (this.pos.y + this.size.y/2) - ig.game.screen.y, this.health/2, 0, 2 * Math.PI, false);
+          ig.system.context.arc(this.pos.x - ig.game.screen.x + this.walk, this.pos.y - ig.game.screen.y, this.health/2, 0, 2 * Math.PI, false);
           ig.system.context.closePath();
           ig.system.context.fill();
           break;
@@ -411,7 +392,7 @@ ig.module(
         case 4:
           ig.system.context.fillStyle = "rgb(0,0,0)";
           ig.system.context.beginPath();
-          ig.system.context.arc((this.pos.x + this.size.x/2) - ig.game.screen.x + this.walk, (this.pos.y + this.size.y/2) - ig.game.screen.y + this.walk, this.health/2, 0, 2 * Math.PI, false);
+          ig.system.context.arc(this.pos.x - ig.game.screen.x + this.walk, this.pos.y - ig.game.screen.y + this.walk, this.health/2, 0, 2 * Math.PI, false);
           ig.system.context.closePath();
           ig.system.context.fill();
           break;
@@ -419,7 +400,7 @@ ig.module(
         case 5:
           ig.system.context.fillStyle = "rgb(0,0,0)";
           ig.system.context.beginPath();
-          ig.system.context.arc((this.pos.x + this.size.x/2) - ig.game.screen.x, (this.pos.y + this.size.y/2) - ig.game.screen.y + this.walk, this.health/2, 0, 2 * Math.PI, false);
+          ig.system.context.arc(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y + this.walk, this.health/2, 0, 2 * Math.PI, false);
           ig.system.context.closePath();
           ig.system.context.fill();
           break;
@@ -427,7 +408,7 @@ ig.module(
         case 6:
           ig.system.context.fillStyle = "rgb(0,0,0)";
           ig.system.context.beginPath();
-          ig.system.context.arc((this.pos.x + this.size.x/2) - ig.game.screen.x - this.walk, (this.pos.y + this.size.y/2) - ig.game.screen.y + this.walk, this.health/2, 0, 2 * Math.PI, false);
+          ig.system.context.arc(this.pos.x - ig.game.screen.x - this.walk, this.pos.y - ig.game.screen.y + this.walk, this.health/2, 0, 2 * Math.PI, false);
           ig.system.context.closePath();
           ig.system.context.fill();
           break;
@@ -435,7 +416,7 @@ ig.module(
         case 7:
           ig.system.context.fillStyle = "rgb(0,0,0)";
           ig.system.context.beginPath();
-          ig.system.context.arc((this.pos.x + this.size.x/2) - ig.game.screen.x -this.walk, (this.pos.y + this.size.y/2) - ig.game.screen.y, this.health/2, 0, 2 * Math.PI, false);
+          ig.system.context.arc(this.pos.x - ig.game.screen.x -this.walk, this.pos.y - ig.game.screen.y, this.health/2, 0, 2 * Math.PI, false);
           ig.system.context.closePath();
           ig.system.context.fill();
           break;
@@ -443,7 +424,7 @@ ig.module(
         case 8:
           ig.system.context.fillStyle = "rgb(0,0,0)";
           ig.system.context.beginPath();
-          ig.system.context.arc((this.pos.x + this.size.x/2) - ig.game.screen.x - this.walk, (this.pos.y + this.size.y/2) - ig.game.screen.y - this.walk, this.health/2, 0, 2 * Math.PI, false);
+          ig.system.context.arc(this.pos.x - ig.game.screen.x - this.walk, this.pos.y - ig.game.screen.y - this.walk, this.health/2, 0, 2 * Math.PI, false);
           ig.system.context.closePath();
           ig.system.context.fill();
           break;
@@ -453,12 +434,12 @@ ig.module(
       ig.system.context.globalAlpha = 0.8;
       ig.system.context.strokeStyle = "rgb(0,0,0)";
       ig.system.context.lineWidth = 1;
-      var gradient = ig.system.context.createRadialGradient((this.pos.x + this.size.x/2) - ig.game.screen.x, (this.pos.y + this.size.y/2) - ig.game.screen.y, (this.shield + this.health) - 32, (this.pos.x + this.size.x/2) - ig.game.screen.x, (this.pos.y + this.size.y/2) - ig.game.screen.y, 0);
+      var gradient = ig.system.context.createRadialGradient(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, (this.shield + this.health) - 32, this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, 0);
       gradient.addColorStop(0, "rgba(0, 0, 0, 0.3)");
       gradient.addColorStop(0.5, "rgba(0, 0, 0, 0)");
       ig.system.context.fillStyle = gradient;
       ig.system.context.beginPath();
-      ig.system.context.arc((this.pos.x + this.size.x/2) - ig.game.screen.x, (this.pos.y + this.size.y/2) - ig.game.screen.y, (this.shield + this.health) - 32, 0, 2 * Math.PI, false);
+      ig.system.context.arc(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, (this.shield + this.health) - 32, 0, 2 * Math.PI, false);
       ig.system.context.closePath();  // added
       ig.system.context.fill();
       ig.system.context.stroke();
@@ -478,7 +459,7 @@ ig.module(
     checkAgainst: ig.Entity.TYPE.B,
 
     dmg: 4,
-    desiredVel: 100,
+    desiredVel: 300,
 
     init: function( x, y, settings ) {
       this.size.x = this.dmg;
@@ -501,7 +482,7 @@ ig.module(
     draw: function() {
       ig.system.context.fillStyle = "rgb(200,0,0)";
       ig.system.context.beginPath();
-      ig.system.context.fillRect(this.pos.x, this.pos.y, this.size.x, this.size.y);
+      ig.system.context.fillRect(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, this.size.x, this.size.y);
       ig.system.context.closePath();
       ig.system.context.fill();
       this.parent();

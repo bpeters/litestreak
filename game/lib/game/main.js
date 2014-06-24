@@ -29,18 +29,12 @@ MyGame = ig.Game.extend({
     ig.input.bind( ig.KEY.MOUSE1, 'shoot1');
     ig.input.bind( ig.KEY.MOUSE2, 'shoot2');
     this.loadLevel( LevelGameLevel );
-    this.spawnEntity(EntityPlayer, 400, 400);
+    this.spawnEntity(EntityPlayer, 400, 300);
   },
 
   update: function() {
-    // Update all entities and backgroundMaps
-    this.parent();
 
-    var player = this.getEntitiesByType( EntityPlayer )[0];
-    if( player ) {
-      this.screen.x = player.pos.x - ig.system.width / 2;
-      this.screen.y = player.pos.y - ig.system.height / 2;
-    }
+    this.parent();
   },
 
   draw: function() {
@@ -84,21 +78,18 @@ MyGame = ig.Game.extend({
       var newtext = "";
       var newsplit = player.messagebox.split("\n");
       for(var i = 0; i < newsplit.length; i++) {
-        if( i > 1) {
+        if( i > 1 ) {
           newtext = newtext + "\n" + newsplit[i];
         }
       }
     player.messagebox = newtext;
     }
 
-    this.font.draw( player.messagebox, 10, 10 );
+    this.font.draw( player.messagebox, 10, -10 );
 
   }
 });
 
-
-// Start the Game with 60fps, a resolution of 320x240, scaled
-// up by a factor of 2
 ig.main( '#canvas', MyGame, 60, 800, 600, 1 );
 
 });

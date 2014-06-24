@@ -495,10 +495,14 @@ ig.module(
 
     dmg: 4,
     desiredVel: 300,
+    range: 200,
 
     init: function( x, y, settings ) {
       this.size.x = this.dmg;
       this.size.y = this.dmg;
+
+      var startx = x;
+      var starty = y;
 
       var vely = Math.sin(settings.angle) * this.desiredVel;
       var velx =  Math.cos(settings.angle) * this.desiredVel;
@@ -510,7 +514,11 @@ ig.module(
     },
 
     update: function() {
-        this.parent();
+      this.parent();
+      var player = ig.game.getEntitiesByType( EntityPlayer )[0];
+      if (this.distanceTo(player) > this.range) {
+        this.kill();
+      }
     },
 
     draw: function() {
@@ -533,10 +541,20 @@ ig.module(
 
     dmg: 4,
     desiredVel: 300,
+    range: 200,
+    enemy: {
+      startx: 0,
+      starty: 0,
+      gamename: "",
+    },
 
     init: function( x, y, settings ) {
       this.size.x = this.dmg;
       this.size.y = this.dmg;
+
+      this.enemy.startx = x;
+      this.enemy.starty = y;
+      this.enemy.gamename = settings.thisgamename;
 
       var vely = Math.sin(settings.angle) * this.desiredVel;
       var velx =  Math.cos(settings.angle) * this.desiredVel;
@@ -548,7 +566,13 @@ ig.module(
     },
 
     update: function() {
-        this.parent();
+      this.parent();
+
+      if (this.enemy.startx + this.range < this.pos.x || this.enemy.startx - this.range > this.pos.x) {
+        this.kill();
+      } else if (this.enemy.starty + this.range < this.pos.y || this.enemy.starty - this.range > this.pos.y) {
+        this.kill();
+      }
     },
 
     draw: function() {

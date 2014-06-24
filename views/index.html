@@ -34,8 +34,8 @@
       }
     });
 
-    socket.on('playershoot', function (positionx,positiony,angle) {
-      ig.game.spawnEntity( EntityNetbullet, positionx, positiony, {angle: angle} );
+    socket.on('playershoot', function (positionx,positiony,angle,thisgamename) {
+      ig.game.spawnEntity( EntityNetbullet, positionx, positiony, {angle: angle, thisgamename: thisgamename} );
     });
 
     socket.on('message', function (data) {

@@ -15,15 +15,15 @@ ig.module(
     type: ig.Entity.TYPE.A,
     checkAgainst: ig.Entity.TYPE.NONE,
 
-    nettimer: 10,
+    nettimer: 100,
     name: "player",
     gamename: playername,
 
     messagebox: "",
-    messageboxtimer: 50,
+    messageboxtimer: 100,
 
     health: 32,
-    shield: 32,
+    shield: 16,
     speed: 96,
     direction: 1,
     walk: 2,
@@ -234,7 +234,13 @@ ig.module(
       }
 
       if(this.nettimer < 1) {
-        this.nettimer = 5;
+        this.nettimer = 100;
+        socket.emit('recievedata','sync',{
+          health: this.health,
+          shield: this.shield,
+          speed: this.speed,
+          gamename: this.gamename
+        });
       }
       this.nettimer = this.nettimer - 1;
 
@@ -334,12 +340,12 @@ ig.module(
       ig.system.context.globalAlpha = 0.8;
       ig.system.context.strokeStyle = "rgb(0,0,0)";
       ig.system.context.lineWidth = 1;
-      var gradient = ig.system.context.createRadialGradient(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, (this.shield + this.health) - 32, this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, 0);
+      var gradient = ig.system.context.createRadialGradient(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, (this.shield + this.health/2), this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, 0);
       gradient.addColorStop(0, "rgba(0, 0, 0, 0.3)");
       gradient.addColorStop(0.5, "rgba(0, 0, 0, 0)");
       ig.system.context.fillStyle = gradient;
       ig.system.context.beginPath();
-      ig.system.context.arc(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, (this.shield + this.health) - 32, 0, 2 * Math.PI, false);
+      ig.system.context.arc(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, (this.shield + this.health/2), 0, 2 * Math.PI, false);
       ig.system.context.closePath();
       ig.system.context.fill();
       ig.system.context.stroke();
@@ -360,7 +366,7 @@ ig.module(
     gamename: "",
 
     health: 32,
-    shield: 32,
+    shield: 16,
     speed: 96,
     direction: 1,
     walk: 2,
@@ -470,12 +476,12 @@ ig.module(
       ig.system.context.globalAlpha = 0.8;
       ig.system.context.strokeStyle = "rgb(0,0,0)";
       ig.system.context.lineWidth = 1;
-      var gradient = ig.system.context.createRadialGradient(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, (this.shield + this.health) - 32, this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, 0);
+      var gradient = ig.system.context.createRadialGradient(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, (this.shield + this.health/2), this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, 0);
       gradient.addColorStop(0, "rgba(0, 0, 0, 0.3)");
       gradient.addColorStop(0.5, "rgba(0, 0, 0, 0)");
       ig.system.context.fillStyle = gradient;
       ig.system.context.beginPath();
-      ig.system.context.arc(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, (this.shield + this.health) - 32, 0, 2 * Math.PI, false);
+      ig.system.context.arc(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, (this.shield + this.health/2), 0, 2 * Math.PI, false);
       ig.system.context.closePath();
       ig.system.context.fill();
       ig.system.context.stroke();
@@ -491,7 +497,7 @@ ig.module(
 
     collides: ig.Entity.COLLIDES.PASSIVE,
     type: ig.Entity.TYPE.NONE,
-    checkAgainst: ig.Entity.TYPE.A,
+    checkAgainst: ig.Entity.TYPE.B,
 
     dmg: 4,
     desiredVel: 300,
@@ -515,14 +521,34 @@ ig.module(
 
     update: function() {
       this.parent();
+    },
+
+    handleMovementTrace: function( res ) {
+      this.parent( res );
+
       var player = ig.game.getEntitiesByType( EntityPlayer )[0];
-      if (this.distanceTo(player) > this.range) {
+      if( res.collision.x || res.collision.y ) {
+        this.kill();
+      } else if (this.distanceTo(player) > this.range) {
         this.kill();
       }
     },
 
+    check: function( other ) {
+      if (other.shield <= 0) {
+        other.receiveDamage( this.dmg, this );
+        if (other.health <= 0) {
+          var player = ig.game.getEntitiesByType( EntityPlayer )[0];
+          player.health = player.health + 32;
+        }
+      } else {
+        other.shield = other.shield - this.dmg;
+      }
+      this.kill();
+    },
+
     draw: function() {
-      ig.system.context.fillStyle = "rgb(200,0,0)";
+      ig.system.context.fillStyle = "rgb(0,0,0)";
       ig.system.context.beginPath();
       ig.system.context.fillRect(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, this.size.x, this.size.y);
       ig.system.context.closePath();
@@ -537,7 +563,7 @@ ig.module(
 
     collides: ig.Entity.COLLIDES.PASSIVE,
     type: ig.Entity.TYPE.NONE,
-    checkAgainst: ig.Entity.TYPE.B,
+    checkAgainst: ig.Entity.TYPE.A,
 
     dmg: 4,
     desiredVel: 300,
@@ -568,15 +594,45 @@ ig.module(
     update: function() {
       this.parent();
 
-      if (this.enemy.startx + this.range < this.pos.x || this.enemy.startx - this.range > this.pos.x) {
+
+    },
+
+    handleMovementTrace: function( res ) {
+      this.parent( res );
+
+      var player = ig.game.getEntitiesByType( EntityPlayer )[0];
+      if( res.collision.x || res.collision.y ) {
+        this.kill();
+      } else if (this.enemy.startx + this.range < this.pos.x || this.enemy.startx - this.range > this.pos.x) {
         this.kill();
       } else if (this.enemy.starty + this.range < this.pos.y || this.enemy.starty - this.range > this.pos.y) {
         this.kill();
       }
     },
 
+    check: function( other ) {
+      if (other.shield <= 0) {
+        other.receiveDamage( this.dmg, this );
+        if (other.health <= 0) {
+          var otherplayer = ig.game.getEntitiesByType( EntityOtherplayer );
+          if(otherplayer) {
+            for(var i in otherplayer) {
+              if(this.enemy.gamename == otherplayer[i].gamename) {
+                otherplayer[i].health = otherplayer[i].health + 32;
+              }
+            }
+          }
+          player.health = player.health + 32;
+        }
+      } else {
+        other.shield = other.shield - this.dmg;
+      }
+      this.kill();
+    },
+
+
     draw: function() {
-      ig.system.context.fillStyle = "rgb(200,0,0)";
+      ig.system.context.fillStyle = "rgb(0,0,0)";
       ig.system.context.beginPath();
       ig.system.context.fillRect(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, this.size.x, this.size.y);
       ig.system.context.closePath();

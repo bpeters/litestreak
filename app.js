@@ -40,6 +40,9 @@ io.on('connection', function(socket){
     } else if (action == 'shoot') {
       socket.broadcast.emit('playershoot', data.positionx,data.positiony,data.angle,data.gamename);
       console.log(Math.round(data.positionx) + " - " + Math.round(data.positiony) + " - " + data.angle + " - " + data.gamename);
+    } else if (action == 'sync') {
+      socket.broadcast.emit('playersync', data.health,data.shield,data.speed,data.gamename);
+      console.log(data.health + " - " + data.shield + " - " + data.speed + " - " + data.gamename);
     }
   });
 

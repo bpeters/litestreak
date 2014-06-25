@@ -22,9 +22,18 @@ ig.module(
     messagebox: "",
     messageboxtimer: 100,
 
+    init_health: 32,
+    init_shield: 16,
+    init_shield_recharge: 300,
+
     health: 32,
     shield: 16,
-    speed: 96,
+    shield_recharge: 300,
+    speed: 128,
+    kills: 0,
+    kill_streaks: 0,
+    points: 0,
+    creds: 0,
     direction: 1,
     walk: 2,
 
@@ -233,9 +242,22 @@ ig.module(
         break;
       }
 
+      // Recharge Shield
+      if( this.shield_recharge < 1 ) {
+        for(var i = 0; this.shield < this.init_shield; i++) {
+          this.shield = this.shield + 1;
+        }
+        this.shield_recharge = this.init_shield_recharge;
+      }
+      this.shield_recharge = this.shield_recharge - 1;
+
+      //Sync Player Details
       if(this.nettimer < 1) {
         this.nettimer = 100;
         socket.emit('recievedata','sync',{
+          positionx: this.pos.x,
+          positiony: this.pos.y,
+          currentanimation: currentanimation,
           health: this.health,
           shield: this.shield,
           speed: this.speed,
@@ -252,6 +274,7 @@ ig.module(
     },
 
     draw: function() {
+      this.parent();
       //draw player
       switch (currentanimation) {
         case 9:
@@ -337,21 +360,21 @@ ig.module(
         }
 
       //draw shield
-      ig.system.context.globalAlpha = 0.8;
-      ig.system.context.strokeStyle = "rgb(0,0,0)";
-      ig.system.context.lineWidth = 1;
-      var gradient = ig.system.context.createRadialGradient(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, (this.shield + this.health/2), this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, 0);
-      gradient.addColorStop(0, "rgba(0, 0, 0, 0.3)");
-      gradient.addColorStop(0.5, "rgba(0, 0, 0, 0)");
-      ig.system.context.fillStyle = gradient;
-      ig.system.context.beginPath();
-      ig.system.context.arc(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, (this.shield + this.health/2), 0, 2 * Math.PI, false);
-      ig.system.context.closePath();
-      ig.system.context.fill();
-      ig.system.context.stroke();
-      ig.system.context.globalAlpha = 1;
-
-      this.parent();
+      if (this.health  > 0 || this.shield > 0) {
+        ig.system.context.globalAlpha = 0.8;
+        ig.system.context.strokeStyle = "rgb(0,0,0)";
+        ig.system.context.lineWidth = 1;
+        var gradient = ig.system.context.createRadialGradient(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, (this.shield + this.health/2), this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, 0);
+        gradient.addColorStop(0, "rgba(0, 0, 0, 0.3)");
+        gradient.addColorStop(0.5, "rgba(0, 0, 0, 0)");
+        ig.system.context.fillStyle = gradient;
+        ig.system.context.beginPath();
+        ig.system.context.arc(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, (this.shield + this.health/2), 0, 2 * Math.PI, false);
+        ig.system.context.closePath();
+        ig.system.context.fill();
+        ig.system.context.stroke();
+        ig.system.context.globalAlpha = 1;
+      }
     }
 
   });
@@ -365,12 +388,20 @@ ig.module(
     name: "otherplayer",
     gamename: "",
 
+    init_health: 32,
+    init_shield: 16,
+    init_shield_recharge: 300,
+
     health: 32,
     shield: 16,
-    speed: 96,
+    shield_recharge: 300,
+    speed: 128,
+    kills: 0,
+    kill_streaks: 0,
+    points: 0,
+    creds: 0,
     direction: 1,
     walk: 2,
-    animation: 1,
 
     init: function( x, y, settings ) {
       this.size.x = this.health;
@@ -388,6 +419,7 @@ ig.module(
     },
 
     draw: function() {
+      this.parent();
       //draw player
       switch (this.animation) {
         case 9:
@@ -473,21 +505,22 @@ ig.module(
         }
 
       //draw shield
-      ig.system.context.globalAlpha = 0.8;
-      ig.system.context.strokeStyle = "rgb(0,0,0)";
-      ig.system.context.lineWidth = 1;
-      var gradient = ig.system.context.createRadialGradient(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, (this.shield + this.health/2), this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, 0);
-      gradient.addColorStop(0, "rgba(0, 0, 0, 0.3)");
-      gradient.addColorStop(0.5, "rgba(0, 0, 0, 0)");
-      ig.system.context.fillStyle = gradient;
-      ig.system.context.beginPath();
-      ig.system.context.arc(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, (this.shield + this.health/2), 0, 2 * Math.PI, false);
-      ig.system.context.closePath();
-      ig.system.context.fill();
-      ig.system.context.stroke();
-      ig.system.context.globalAlpha = 1;
+      if (this.health  > 0 || this.shield > 0) {
+        ig.system.context.globalAlpha = 0.8;
+        ig.system.context.strokeStyle = "rgb(0,0,0)";
+        ig.system.context.lineWidth = 1;
+        var gradient = ig.system.context.createRadialGradient(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, (this.shield + this.health/2), this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, 0);
+        gradient.addColorStop(0, "rgba(0, 0, 0, 0.3)");
+        gradient.addColorStop(0.5, "rgba(0, 0, 0, 0)");
+        ig.system.context.fillStyle = gradient;
+        ig.system.context.beginPath();
+        ig.system.context.arc(this.pos.x - ig.game.screen.x, this.pos.y - ig.game.screen.y, (this.shield + this.health/2), 0, 2 * Math.PI, false);
+        ig.system.context.closePath();
+        ig.system.context.fill();
+        ig.system.context.stroke();
+        ig.system.context.globalAlpha = 1;
+      }
 
-      this.parent();
     }
 
   });
@@ -535,12 +568,19 @@ ig.module(
     },
 
     check: function( other ) {
+      var player = ig.game.getEntitiesByType( EntityPlayer )[0];
       if (other.shield <= 0) {
-        other.receiveDamage( this.dmg, this );
-        if (other.health <= 0) {
-          var player = ig.game.getEntitiesByType( EntityPlayer )[0];
-          player.health = player.health + 32;
+        if (other.health - this.dmg <= 0) {
+          player.creds = player.creds + other.init_health;
+          player.points = player.points + other.init_health;
+          player.kills = player.kills + 1
+          player.kill_streaks = 0;
+          for (i = 0; i <= player.kills - 3; i = i + 3) {
+            player.kill_streaks = player.kill_streaks + 1;
+          }
         }
+        other.receiveDamage( this.dmg, this );
+        player.points = player.points + this.dmg;
       } else {
         other.shield = other.shield - this.dmg;
       }
@@ -611,22 +651,30 @@ ig.module(
     },
 
     check: function( other ) {
-      if (other.shield <= 0) {
-        other.receiveDamage( this.dmg, this );
-        if (other.health <= 0) {
-          var otherplayer = ig.game.getEntitiesByType( EntityOtherplayer );
-          if(otherplayer) {
-            for(var i in otherplayer) {
-              if(this.enemy.gamename == otherplayer[i].gamename) {
-                otherplayer[i].health = otherplayer[i].health + 32;
-              }
-            }
+      var otherplayer = ig.game.getEntitiesByType( EntityOtherplayer );
+      if(otherplayer) {
+        for(var i in otherplayer) {
+          if(this.enemy.gamename == otherplayer[i].gamename) {
+            var enemy = otherplayer[i];
           }
-          player.health = player.health + 32;
         }
+      }
+      if (other.shield <= 0) {
+        if (other.health - this.dmg <= 0) {
+          enemy.creds = enemy.creds + other.init_health;
+          enemy.points = enemy.points + other.init_health;
+          enemy.kills = enemy.kills + 1
+          enemy.kill_streaks = 0;
+          for (i = 0; i <= enemy.kills - 3; i = i + 3) {
+            enemy.kill_streaks = enemy.kill_streaks + 1;
+          }
+        }
+        other.receiveDamage( this.dmg, this );
+        enemy.points = enemy.points + this.dmg;
       } else {
         other.shield = other.shield - this.dmg;
       }
+      other.shield_recharge = other.init_shield_recharge;
       this.kill();
     },
 

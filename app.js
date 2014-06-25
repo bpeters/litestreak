@@ -41,8 +41,8 @@ io.on('connection', function(socket){
       socket.broadcast.emit('playershoot', data.positionx,data.positiony,data.angle,data.gamename);
       console.log(Math.round(data.positionx) + " - " + Math.round(data.positiony) + " - " + data.angle + " - " + data.gamename);
     } else if (action == 'sync') {
-      socket.broadcast.emit('playersync', data.health,data.shield,data.speed,data.gamename);
-      console.log(data.health + " - " + data.shield + " - " + data.speed + " - " + data.gamename);
+      socket.broadcast.emit('playersync', data.positionx,data.positiony,data.currentanimation,data.health,data.shield,data.speed,data.gamename);
+      console.log(Math.round(data.positionx) + " - " + Math.round(data.positiony) + " - " + data.currentanimation + " - " + data.health + " - " + data.shield + " - " + data.speed + " - " + data.gamename);
     }
   });
 

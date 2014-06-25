@@ -68,8 +68,13 @@ MyGame = ig.Game.extend({
     ctx.fillRect(x,y,size,size);
     ctx.restore();
 
-    this.font.draw( "H " + player.health, 10, 340 );
-    this.font.draw( "S " + player.shield, 10, 370 );
+    this.font.draw( "P  " + player.points, 10, 190 );
+    this.font.draw( "Ks " + player.kill_streaks, 10, 220 );
+    this.font.draw( "K  " + player.kills, 10, 250 );
+    this.font.draw( "H  " + player.health, 10, 280 );
+    this.font.draw( "Sh " + player.shield, 10, 310 );
+    this.font.draw( "Sr " + player.shield_recharge, 10, 340 );
+    this.font.draw( "Sp " + player.speed, 10, 370 );
 
     player.messageboxtimer = player.messageboxtimer - 1;
 

@@ -38,11 +38,14 @@
       ig.game.spawnEntity( EntityNetbullet, positionx, positiony, {angle: angle, thisgamename: thisgamename} );
     });
 
-    socket.on('playersync', function (thishealth,thisshield,thisspeed,thisgamename) {
+    socket.on('playersync', function (positionx,positiony,currentanimation,thishealth,thisshield,thisspeed,thisgamename) {
       var otherplayer = ig.game.getEntitiesByType( EntityOtherplayer );
       if(otherplayer) {
         for(var i in otherplayer) {
           if(thisgamename == otherplayer[i].gamename) {
+            otherplayer[i].pos.x = positionx;
+            otherplayer[i].pos.y = positiony;
+            otherplayer[i].animation = currentanimation;
             otherplayer[i].health = thishealth;
             otherplayer[i].shield = thisshield;
             otherplayer[i].speed = thisspeed;

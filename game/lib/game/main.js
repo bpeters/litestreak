@@ -11,7 +11,8 @@ ig.module(
 
 MyGame = ig.Game.extend({
 
-  font: new ig.Font( 'media/04b03.font.png' ),
+  white: new ig.Font( 'media/white.font.png' ),
+  redbold: new ig.Font( 'media/red_bold.font.png' ),
 
   minimap : {
     size : 200, //128x128px on the screen
@@ -28,6 +29,10 @@ MyGame = ig.Game.extend({
     ig.input.bind( ig.KEY.D, 'right' );
     ig.input.bind( ig.KEY.MOUSE1, 'shoot1');
     ig.input.bind( ig.KEY.MOUSE2, 'shoot2');
+    ig.input.bind( ig.KEY._1, 'health');
+    ig.input.bind( ig.KEY._2, 'shield');
+    ig.input.bind( ig.KEY._3, 'shield_recharge');
+    ig.input.bind( ig.KEY._4, 'speed');
     this.loadLevel( LevelGameLevel );
     this.spawnEntity(EntityPlayer, 400, 300);
   },
@@ -38,7 +43,6 @@ MyGame = ig.Game.extend({
   },
 
   draw: function() {
-    // Draw all entities and backgroundMaps
     this.parent();
 
     var players = this.getEntitiesByType(EntityOtherplayer);
@@ -68,13 +72,17 @@ MyGame = ig.Game.extend({
     ctx.fillRect(x,y,size,size);
     ctx.restore();
 
-    this.font.draw( "P  " + player.points, 10, 190 );
-    this.font.draw( "Ks " + player.kill_streaks, 10, 220 );
-    this.font.draw( "K  " + player.kills, 10, 250 );
-    this.font.draw( "H  " + player.health, 10, 280 );
-    this.font.draw( "Sh " + player.shield, 10, 310 );
-    this.font.draw( "Sr " + player.shield_recharge, 10, 340 );
-    this.font.draw( "Sp " + player.speed, 10, 370 );
+    this.white.draw( "P  " + player.points, 10, 160 );
+    this.white.draw( "Ks " + player.kill_streaks, 10, 190 );
+    this.white.draw( "K  " + player.kills, 10, 220 );
+    this.white.draw( "H  " + player.health, 10, 280 );
+    this.white.draw( "Sh " + player.shield, 10, 310 );
+    this.white.draw( "Sr " + player.shield_recharge, 10, 340 );
+    this.white.draw( "Sp " + player.speed, 10, 370 );
+
+    if ( player.creds > 0 ){
+      this.redbold.draw( "C  " + player.creds, 10, 250 );
+    }
 
     player.messageboxtimer = player.messageboxtimer - 1;
 
@@ -90,7 +98,7 @@ MyGame = ig.Game.extend({
     player.messagebox = newtext;
     }
 
-    this.font.draw( player.messagebox, 10, -10 );
+    this.white.draw( player.messagebox, 10, -10 );
 
   }
 });

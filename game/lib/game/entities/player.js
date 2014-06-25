@@ -48,6 +48,27 @@ ig.module(
 
     update: function() {
 
+      //Spending Creds
+      if ( this.creds > 0 ) {
+        if( ig.input.pressed('health') ) {
+          this.health = this.health + 2;
+          this.init_health = this.health;
+          this.creds = this.creds - 2;
+        } else if( ig.input.pressed('shield') ) {
+          this.init_shield = this.init_shield + 1;
+          this.shield = this.shield + 1;
+          this.creds = this.creds - 2;
+        } else if( ig.input.pressed('shield_recharge') ) {
+          if ( this.init_shield_recharge > 100 ) {
+            this.init_shield_recharge = this.init_shield_recharge - 4;
+            this.creds = this.creds - 2;
+          }
+        } else if( ig.input.pressed('speed') ) {
+          this.speed = this.speed + 1;
+          this.creds = this.creds - 2;
+        }
+      }
+
       // Shooting
       if( ig.input.pressed('shoot1') ) {
         var mx = (ig.input.mouse.x + ig.game.screen.x);
@@ -249,7 +270,10 @@ ig.module(
         }
         this.shield_recharge = this.init_shield_recharge;
       }
-      this.shield_recharge = this.shield_recharge - 1;
+      if ( this.shield < this.init_shield) {
+        this.shield_recharge = this.shield_recharge - 1;
+      }
+
 
       //Sync Player Details
       if(this.nettimer < 1) {

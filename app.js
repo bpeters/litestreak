@@ -33,16 +33,37 @@ io.on('connection', function(socket){
     console.log(newplayername + " joined");
   });
 
-  socket.on('recievedata', function (action,data) {
+  socket.on('recievedata', function (action, data) {
     if (action == 'move') {
-      socket.broadcast.emit('playermove', data.positionx,data.positiony,data.currentanimation,data.gamename);
-      console.log(Math.round(data.positionx) + " - " + Math.round(data.positiony) + " - " + data.currentanimation + " - " + data.gamename);
+      socket.broadcast.emit('playermove', data);
+      console.log(
+        Math.round(data.positionx)+ " - " +
+        Math.round(data.positiony) + " - " +
+        data.currentanimation + " - " +
+        data.gamename
+      );
     } else if (action == 'shoot') {
-      socket.broadcast.emit('playershoot', data.positionx,data.positiony,data.angle,data.dmg,data.desiredVel,data.range,data.gamename);
-      console.log(Math.round(data.positionx) + " - " + Math.round(data.positiony) + " - " + data.angle + " - " + data.dmg + " - " + data.desiredVel + " - " + data.range + " - " + data.gamename);
+      socket.broadcast.emit('playershoot', data);
+      console.log(
+        Math.round(data.positionx) + " - " +
+        Math.round(data.positiony) + " - " +
+        data.angle + " - " +
+        data.dmg + " - " +
+        data.desiredVel + " - " +
+        data.range + " - " +
+        data.gamename
+      );
     } else if (action == 'sync') {
-      socket.broadcast.emit('playersync', data.positionx,data.positiony,data.currentanimation,data.health,data.shield,data.speed,data.gamename);
-      console.log(Math.round(data.positionx) + " - " + Math.round(data.positiony) + " - " + data.currentanimation + " - " + data.health + " - " + data.shield + " - " + data.speed + " - " + data.gamename);
+      socket.broadcast.emit('playersync', data);
+      console.log(
+        Math.round(data.positionx) + " - " +
+        Math.round(data.positiony) + " - " +
+        data.currentanimation + " - " +
+        data.health + " - " +
+        data.shield + " - " +
+        data.speed + " - " +
+        data.gamename
+      );
     }
   });
 

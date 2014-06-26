@@ -11,7 +11,7 @@
     var namerand  = Math.floor(Math.random()*999);
     var playername = "player" + namerand;
 
-    socket.on('addplayer', function (playerlist,otherplayername) {
+    socket.on('addplayer', function (playerlist, otherplayername) {
       var player = ig.game.getEntitiesByType( EntityPlayer )[0];
       player.messagebox = player.messagebox + '\n' + otherplayername + ' joined';
       for(var i = 0; i < playerlist.length; i++) {
@@ -21,34 +21,44 @@
       }
     });
 
-    socket.on('playermove', function (positionx,positiony,currentanimation,thisgamename) {
+    socket.on('playermove', function (data) {
       var otherplayer = ig.game.getEntitiesByType( EntityOtherplayer );
       if(otherplayer) {
         for(var i in otherplayer) {
-          if(thisgamename == otherplayer[i].gamename) {
-            otherplayer[i].pos.x = positionx;
-            otherplayer[i].pos.y = positiony;
-            otherplayer[i].animation = currentanimation;
+          if(data.gamename == otherplayer[i].gamename) {
+            otherplayer[i].pos.x = data.positionx;
+            otherplayer[i].pos.y = data.positiony;
+            otherplayer[i].animation = data.currentanimation;
           }
         }
       }
     });
 
-    socket.on('playershoot', function (positionx,positiony,angle,dmg,desiredVel,range,thisgamename) {
-      ig.game.spawnEntity( EntityNetbullet, positionx, positiony, {angle: angle, dmg: dmg, desiredVel: desiredVel, range: range, thisgamename: thisgamename} );
+    socket.on('playershoot', function (data) {
+      ig.game.spawnEntity(
+        EntityNetbullet,
+        data.positionx, 
+        data.positiony, {
+          angle: data.angle,
+          dmg: data.dmg, 
+          desiredVel: data.desiredVel,
+          range: data.range, 
+          thisgamename: data.gamename
+        }
+      );
     });
 
-    socket.on('playersync', function (positionx,positiony,currentanimation,thishealth,thisshield,thisspeed,thisgamename) {
+    socket.on('playersync', function (data) {
       var otherplayer = ig.game.getEntitiesByType( EntityOtherplayer );
       if(otherplayer) {
         for(var i in otherplayer) {
           if(thisgamename == otherplayer[i].gamename) {
-            otherplayer[i].pos.x = positionx;
-            otherplayer[i].pos.y = positiony;
-            otherplayer[i].animation = currentanimation;
-            otherplayer[i].health = thishealth;
-            otherplayer[i].shield = thisshield;
-            otherplayer[i].speed = thisspeed;
+            otherplayer[i].pos.x = data.positionx;
+            otherplayer[i].pos.y = data.positiony;
+            otherplayer[i].animation = data.currentanimation;
+            otherplayer[i].health = data.health;
+            otherplayer[i].shield = data.shield;
+            otherplayer[i].speed = data.speed;
           }
         }
       }

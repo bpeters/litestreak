@@ -33,6 +33,10 @@ MyGame = ig.Game.extend({
     ig.input.bind( ig.KEY._2, 'shield');
     ig.input.bind( ig.KEY._3, 'shield_recharge');
     ig.input.bind( ig.KEY._4, 'speed');
+    ig.input.bind( ig.KEY._5, 'dmg');
+    ig.input.bind( ig.KEY._6, 'vel');
+    ig.input.bind( ig.KEY._7, 'range');
+    ig.input.bind( ig.KEY._8, 'recharge');
     this.loadLevel( LevelGameLevel );
     this.spawnEntity(EntityPlayer, 400, 300);
   },
@@ -72,17 +76,20 @@ MyGame = ig.Game.extend({
     ctx.fillRect(x,y,size,size);
     ctx.restore();
 
-    this.white.draw( "P  " + player.points, 10, 160 );
-    this.white.draw( "Ks " + player.kill_streaks, 10, 190 );
-    this.white.draw( "K  " + player.kills, 10, 220 );
-    this.white.draw( "H  " + player.health, 10, 280 );
-    this.white.draw( "Sh " + player.shield, 10, 310 );
-    this.white.draw( "Sr " + player.shield_recharge, 10, 340 );
-    this.white.draw( "Sp " + player.speed, 10, 370 );
-
+    this.white.draw( "P  " + player.points, 10, 50 );
+    this.white.draw( "Ks " + player.kill_streaks, 10, 75 );
+    this.white.draw( "K  " + player.kills, 10, 100 );
     if ( player.creds > 0 ){
-      this.redbold.draw( "C  " + player.creds, 10, 250 );
+      this.redbold.draw( "C  " + player.creds, 10, 165 );
     }
+    this.white.draw( "H  " + player.health, 10, 190 );
+    this.white.draw( "Sh " + player.shield, 10, 215 );
+    this.white.draw( "Sr " + player.shield_recharge, 10, 240 );
+    this.white.draw( "Sp " + player.speed, 10, 265 );
+    this.white.draw( "D  " + player.s1_dmg, 10, 290 );
+    this.white.draw( "V  " + player.s1_desiredVel, 10, 315 );
+    this.white.draw( "Ra " + player.s1_range, 10, 340 );
+    this.white.draw( "Re " + player.s1_recharge, 10, 365 );
 
     player.messageboxtimer = player.messageboxtimer - 1;
 

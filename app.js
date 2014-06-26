@@ -38,8 +38,8 @@ io.on('connection', function(socket){
       socket.broadcast.emit('playermove', data.positionx,data.positiony,data.currentanimation,data.gamename);
       console.log(Math.round(data.positionx) + " - " + Math.round(data.positiony) + " - " + data.currentanimation + " - " + data.gamename);
     } else if (action == 'shoot') {
-      socket.broadcast.emit('playershoot', data.positionx,data.positiony,data.angle,data.gamename);
-      console.log(Math.round(data.positionx) + " - " + Math.round(data.positiony) + " - " + data.angle + " - " + data.gamename);
+      socket.broadcast.emit('playershoot', data.positionx,data.positiony,data.angle,data.dmg,data.desiredVel,data.range,data.gamename);
+      console.log(Math.round(data.positionx) + " - " + Math.round(data.positiony) + " - " + data.angle + " - " + data.dmg + " - " + data.desiredVel + " - " + data.range + " - " + data.gamename);
     } else if (action == 'sync') {
       socket.broadcast.emit('playersync', data.positionx,data.positiony,data.currentanimation,data.health,data.shield,data.speed,data.gamename);
       console.log(Math.round(data.positionx) + " - " + Math.round(data.positiony) + " - " + data.currentanimation + " - " + data.health + " - " + data.shield + " - " + data.speed + " - " + data.gamename);

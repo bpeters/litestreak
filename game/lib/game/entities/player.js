@@ -29,7 +29,7 @@ ig.module(
     health: 32,
     shield: 16,
     shield_recharge: 300,
-    speed: 128,
+    speed: 100,
     kills: 0,
     kill_streaks: 0,
     points: 0,
@@ -37,9 +37,18 @@ ig.module(
     direction: 1,
     walk: 2,
 
+    s1_dmg: 4,
+    s1_desiredVel: 300,
+    s1_range: 200,
+    s1_init_recharge: 10,
+    s1_recharge: 0,
+    s1_type: 0,
+
+
     init: function( x, y, settings ) {
       this.size.x = this.health;
       this.size.y = this.health;
+      this.s1_recharge = this.s1_init_recharge;
 
       socket.emit('initializeplayer', this.gamename);
 
@@ -66,21 +75,47 @@ ig.module(
         } else if( ig.input.pressed('speed') ) {
           this.speed = this.speed + 1;
           this.creds = this.creds - 2;
+        } else if( ig.input.pressed('dmg') ) {
+          this.s1_dmg = this.s1_dmg + 2;
+          this.s1_desiredVel = this.s1_desiredVel - 2;
+          this.s1_init_recharge = this.s1_init_recharge + 10;
+          this.creds = this.creds - 2;
+        } else if( ig.input.pressed('vel') ) {
+          this.s1_desiredVel = this.s1_desiredVel + 2;
+          this.s1_init_recharge = this.s1_init_recharge + 10;
+          this.creds = this.creds - 2;
+        } else if( ig.input.pressed('range') ) {
+          this.s1_range = this.s1_range + 10;
+          this.s1_init_recharge = this.s1_init_recharge + 10;
+          this.creds = this.creds - 2;
+        } else if( ig.input.pressed('recharge') ) {
+          this.s1_init_recharge = this.s1_init_recharge - 10;
+          this.creds = this.creds - 2;
         }
       }
 
       // Shooting
-      if( ig.input.pressed('shoot1') ) {
-        var mx = (ig.input.mouse.x + ig.game.screen.x);
-        var my = (ig.input.mouse.y + ig.game.screen.y);
-        var r = Math.atan2(my-this.pos.y, mx-this.pos.x);
-        ig.game.spawnEntity( EntityBullet, this.pos.x, this.pos.y, {angle: r});
-        socket.emit('recievedata','shoot',{
-          positionx: this.pos.x,
-          positiony: this.pos.y,
-          angle: r,
-          gamename: this.gamename
-        });
+      if( this.s1_recharge >= this.s1_init_recharge ) {
+        if( ig.input.state('shoot1') ) {
+          var mx = (ig.input.mouse.x + ig.game.screen.x);
+          var my = (ig.input.mouse.y + ig.game.screen.y);
+          var r = Math.atan2(my-this.pos.y, mx-this.pos.x);
+          ig.game.spawnEntity( EntityBullet, this.pos.x, this.pos.y, {angle: r, dmg: this.s1_dmg, desiredVel: this.s1_desiredVel, range: this.s1_range});
+          socket.emit('recievedata','shoot',{
+            positionx: this.pos.x,
+            positiony: this.pos.y,
+            angle: r,
+            dmg: this.s1_dmg,
+            desiredVel: this.s1_desiredVel,
+            range: this.s1_range,
+            gamename: this.gamename
+          });
+          this.s1_recharge = 0;
+        }
+        
+      }
+      if ( this.s1_recharge < this.s1_init_recharge ) {
+        this.s1_recharge = this.s1_recharge + 1;
       }
 
       // Movement
@@ -419,13 +454,19 @@ ig.module(
     health: 32,
     shield: 16,
     shield_recharge: 300,
-    speed: 128,
+    speed: 100,
     kills: 0,
     kill_streaks: 0,
     points: 0,
     creds: 0,
     direction: 1,
     walk: 2,
+
+    s1_dmg: 4,
+    s1_desiredVel: 300,
+    s1_range: 200,
+    s1_recharge: 100,
+    s1_type: 0,
 
     init: function( x, y, settings ) {
       this.size.x = this.health;
@@ -556,11 +597,15 @@ ig.module(
     type: ig.Entity.TYPE.NONE,
     checkAgainst: ig.Entity.TYPE.B,
 
-    dmg: 4,
-    desiredVel: 300,
-    range: 200,
+    dmg: 0,
+    desiredVel: 0,
+    range: 0,
 
     init: function( x, y, settings ) {
+      this.dmg = settings.dmg;
+      this.desiredVel = settings.desiredVel;
+      this.range = settings.range;
+
       this.size.x = this.dmg;
       this.size.y = this.dmg;
 
@@ -597,7 +642,7 @@ ig.module(
         if (other.health - this.dmg <= 0) {
           player.creds = player.creds + other.init_health;
           player.points = player.points + other.init_health;
-          player.kills = player.kills + 1
+          player.kills = player.kills + 1;
           player.kill_streaks = 0;
           for (i = 0; i <= player.kills - 3; i = i + 3) {
             player.kill_streaks = player.kill_streaks + 1;
@@ -629,9 +674,10 @@ ig.module(
     type: ig.Entity.TYPE.NONE,
     checkAgainst: ig.Entity.TYPE.A,
 
-    dmg: 4,
-    desiredVel: 300,
-    range: 200,
+    dmg: 0,
+    desiredVel: 0,
+    range: 0,
+
     enemy: {
       startx: 0,
       starty: 0,
@@ -639,6 +685,10 @@ ig.module(
     },
 
     init: function( x, y, settings ) {
+      this.dmg = settings.dmg;
+      this.desiredVel = settings.desiredVel;
+      this.range = settings.range;
+
       this.size.x = this.dmg;
       this.size.y = this.dmg;
 
@@ -685,16 +735,16 @@ ig.module(
       }
       if (other.shield <= 0) {
         if (other.health - this.dmg <= 0) {
-          enemy.creds = enemy.creds + other.init_health;
-          enemy.points = enemy.points + other.init_health;
-          enemy.kills = enemy.kills + 1
-          enemy.kill_streaks = 0;
-          for (i = 0; i <= enemy.kills - 3; i = i + 3) {
-            enemy.kill_streaks = enemy.kill_streaks + 1;
+          this.enemy.creds = this.enemy.creds + other.init_health;
+          this.enemy.points = this.enemy.points + other.init_health;
+          this.enemy.kills = this.enemy.kills + 1;
+          this.enemy.kill_streaks = 0;
+          for (var c = 0; c <= this.enemy.kills - 3; c = c + 3) {
+            this.enemy.kill_streaks = this.enemy.kill_streaks + 1;
           }
         }
         other.receiveDamage( this.dmg, this );
-        enemy.points = enemy.points + this.dmg;
+        this.enemy.points = this.enemy.points + this.dmg;
       } else {
         other.shield = other.shield - this.dmg;
       }

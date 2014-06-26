@@ -34,8 +34,8 @@
       }
     });
 
-    socket.on('playershoot', function (positionx,positiony,angle,thisgamename) {
-      ig.game.spawnEntity( EntityNetbullet, positionx, positiony, {angle: angle, thisgamename: thisgamename} );
+    socket.on('playershoot', function (positionx,positiony,angle,dmg,desiredVel,range,thisgamename) {
+      ig.game.spawnEntity( EntityNetbullet, positionx, positiony, {angle: angle, dmg: dmg, desiredVel: desiredVel, range: range, thisgamename: thisgamename} );
     });
 
     socket.on('playersync', function (positionx,positiony,currentanimation,thishealth,thisshield,thisspeed,thisgamename) {

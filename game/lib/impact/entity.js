@@ -19,7 +19,7 @@ ig.Entity = ig.Class.extend({
 	vel: {x: 0, y: 0},
 	accel: {x: 0, y: 0},
 	friction: {x: 0, y: 0},
-	maxVel: {x: 100, y: 100},
+	maxVel: {x: 500, y: 500},
 	zIndex: 0,
 	gravityFactor: 1,
 	standing: false,

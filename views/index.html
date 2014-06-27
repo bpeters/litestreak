@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Impact Game</title>
+  <title>Litestreak</title>
   <LINK href="/stylesheets/main.css" rel="stylesheet" type="text/css">
   <script src="/lib/impact/impact.js"></script>
   <script src="/lib/game/main.js"></script>
@@ -37,12 +37,12 @@
     socket.on('playershoot', function (data) {
       ig.game.spawnEntity(
         EntityNetbullet,
-        data.positionx, 
+        data.positionx,
         data.positiony, {
           angle: data.angle,
-          dmg: data.dmg, 
+          dmg: data.dmg,
           desiredVel: data.desiredVel,
-          range: data.range, 
+          range: data.range,
           thisgamename: data.gamename
         }
       );

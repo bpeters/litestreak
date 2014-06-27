@@ -1,9 +1,20 @@
 {
   "name": "litestreak-game",
-  "version": "0.0.1",
+  "version": "0.0.1-1",
   "description": "HTML5 Top-Down MOBA Shooter",
   "dependencies": {
     "express": "^4.4.3",
     "socket.io": "^1.0.5"
+  },
+  "subdomain": "litestreak",
+  "domains": [
+    "litestreak.com",
+    "www.litestreak.com"
+  ],
+  "scripts": {
+    "start": "node app.js"
+  },
+  "engines": {
+    "node": "0.10.x"
   }
 }

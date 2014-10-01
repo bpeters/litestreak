@@ -4,14 +4,11 @@
   "description": "HTML5 Top-Down MOBA Shooter",
   "dependencies": {
     "express": "^4.4.3",
-    "mongodb": "^1.4.7",
-    "mongoose": "^3.8.12",
     "socket.io": "^1.0.5"
   },
-  "subdomain": "litestreak",
+  "subdomain": "www.litestreak.com",
   "domains": [
-    "litestreak.com",
-    "www.litestreak.com"
+    "litestreak.com"
   ],
   "scripts": {
     "start": "node app.js"

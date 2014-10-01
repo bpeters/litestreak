@@ -62,9 +62,9 @@ io.on('connection', function(socket){
     }
   });
 
-  socket.on('disconnect', function(){
+  socket.on('disconnect', function() {
     console.log(socket.clientname + " has left");
-    /*delete playerlist[socket.clientname];
+    delete playerlist[socket.clientname];
     for(var i in playerlist) {
       if(playerlist[i] == socket.clientname) {
         playerlist.splice(i, 1);
@@ -72,7 +72,6 @@ io.on('connection', function(socket){
     }
     socket.broadcast.emit('message',socket.clientname);
     socket.broadcast.emit('netreplayer',playerlist);
-    */
   });
 
 });

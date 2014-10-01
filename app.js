@@ -3,6 +3,7 @@ var app = express();
 var path = require('path');
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var port = process.env.PORT || 8080;
 
 app.get('/', function(req, res){
   res.sendfile('views/index.html');
@@ -14,12 +15,6 @@ app.get('/edit', function(req, res){
 
 app.use(express.static(path.join(__dirname, '/game')));
 app.use(express.static(path.join(__dirname, '/public')));
-
-app.use(function(req, res, next) {
-    var err = new Error('Not Found');
-    err.status = 404;
-    next(err);
-});
 
 var playerlocation = 0;
 var playerlist = [];
@@ -69,7 +64,7 @@ io.on('connection', function(socket){
 
   socket.on('disconnect', function(){
     console.log(socket.clientname + " has left");
-    delete playerlist[socket.clientname];
+    /*delete playerlist[socket.clientname];
     for(var i in playerlist) {
       if(playerlist[i] == socket.clientname) {
         playerlist.splice(i, 1);
@@ -77,10 +72,11 @@ io.on('connection', function(socket){
     }
     socket.broadcast.emit('message',socket.clientname);
     socket.broadcast.emit('netreplayer',playerlist);
+    */
   });
 
 });
 
-http.listen(8080, function(){
-  console.log('listening on *:8080');
+http.listen(port, function(){
+  console.log('listening on localhost:' + port);
 });

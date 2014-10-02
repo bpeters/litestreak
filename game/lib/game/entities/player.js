@@ -34,7 +34,7 @@ ig.module(
     kills: 0,
     kill_streaks: 0,
     points: 0,
-    creds: 0,
+    creds: 1000,
     direction: 1,
     walk: 2,
 
@@ -51,7 +51,7 @@ ig.module(
       this.size.y = this.health;
       this.x = x;
       this.y = y;
-      
+
       this.s1_recharge = this.s1_init_recharge;
 
       socket.emit('initializeplayer', this.gamename);

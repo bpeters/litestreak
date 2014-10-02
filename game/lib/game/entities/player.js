@@ -59,14 +59,6 @@ ig.module(
 
       //Set player data
       var data = {
-        positionx: this.pos.x,
-        positiony: this.pos.y,
-        currentanimation: currentanimation,
-        health: this.health,
-        shield: this.shield,
-        speed: this.speed,
-        gamename: this.gamename,
-        init_health: this.init_health
       };
 
       //Spending Creds

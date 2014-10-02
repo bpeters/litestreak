@@ -15,9 +15,10 @@ ig.module(
     type: ig.Entity.TYPE.A,
     checkAgainst: ig.Entity.TYPE.NONE,
 
-    nettimer: 100,
+    nettimer: 0,
     name: "player",
     gamename: playername,
+    currentanimation: 0,
 
     messagebox: "",
     messageboxtimer: 100,
@@ -48,6 +49,9 @@ ig.module(
     init: function( x, y, settings ) {
       this.size.x = this.health;
       this.size.y = this.health;
+      this.x = x;
+      this.y = y;
+      
       this.s1_recharge = this.s1_init_recharge;
 
       socket.emit('initializeplayer', this.gamename);
@@ -479,6 +483,7 @@ ig.module(
 
     name: "otherplayer",
     gamename: "",
+    animation: 0,
 
     init_health: 32,
     init_shield: 16,

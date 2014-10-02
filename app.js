@@ -50,7 +50,7 @@ io.on('connection', function(socket){
       }
     }
     socket.broadcast.emit('message',socket.clientname);
-    socket.broadcast.emit('netreplayer',playerlist);
+    socket.broadcast.emit('removeplayer',playerlist[i]);
   });
 
 });

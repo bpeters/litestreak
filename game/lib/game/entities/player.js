@@ -57,6 +57,18 @@ ig.module(
 
     update: function() {
 
+      //Set player data
+      var data = {
+        positionx: this.pos.x,
+        positiony: this.pos.y,
+        currentanimation: currentanimation,
+        health: this.health,
+        shield: this.shield,
+        speed: this.speed,
+        gamename: this.gamename,
+        init_health: this.init_health
+      };
+
       //Spending Creds
       if ( this.creds > 0 ) {
         if( ig.input.pressed('health') ) {
@@ -76,20 +88,20 @@ ig.module(
           this.speed = this.speed + 1;
           this.creds = this.creds - 2;
         } else if( ig.input.pressed('dmg') ) {
-          this.s1_dmg = this.s1_dmg + 2;
+          this.s1_dmg = this.s1_dmg + 1;
           this.s1_desiredVel = this.s1_desiredVel - 2;
-          this.s1_init_recharge = this.s1_init_recharge + 10;
+          this.s1_init_recharge = this.s1_init_recharge + 5;
           this.creds = this.creds - 2;
         } else if( ig.input.pressed('vel') ) {
           this.s1_desiredVel = this.s1_desiredVel + 2;
-          this.s1_init_recharge = this.s1_init_recharge + 10;
+          this.s1_init_recharge = this.s1_init_recharge + 5;
           this.creds = this.creds - 2;
         } else if( ig.input.pressed('range') ) {
           this.s1_range = this.s1_range + 10;
-          this.s1_init_recharge = this.s1_init_recharge + 10;
+          this.s1_init_recharge = this.s1_init_recharge + 5;
           this.creds = this.creds - 2;
         } else if( ig.input.pressed('recharge') ) {
-          this.s1_init_recharge = this.s1_init_recharge - 10;
+          this.s1_init_recharge = this.s1_init_recharge - 1;
           this.creds = this.creds - 2;
         }
       }
@@ -209,6 +221,9 @@ ig.module(
           positionx: this.pos.x,
           positiony: this.pos.y,
           currentanimation: currentanimation,
+          health: this.health,
+          shield: this.shield,
+          speed: this.speed,
           gamename: this.gamename
         });
         break;
@@ -221,6 +236,9 @@ ig.module(
           positionx: this.pos.x,
           positiony: this.pos.y,
           currentanimation: currentanimation,
+          health: this.health,
+          shield: this.shield,
+          speed: this.speed,
           gamename: this.gamename
         });
         break;
@@ -233,6 +251,9 @@ ig.module(
           positionx: this.pos.x,
           positiony: this.pos.y,
           currentanimation: currentanimation,
+          health: this.health,
+          shield: this.shield,
+          speed: this.speed,
           gamename: this.gamename
         });
         break;
@@ -245,6 +266,9 @@ ig.module(
           positionx: this.pos.x,
           positiony: this.pos.y,
           currentanimation: currentanimation,
+          health: this.health,
+          shield: this.shield,
+          speed: this.speed,
           gamename: this.gamename
         });
         break;
@@ -257,7 +281,11 @@ ig.module(
           positionx: this.pos.x,
           positiony: this.pos.y,
           currentanimation: currentanimation,
-          gamename: this.gamename
+          health: this.health,
+          shield: this.shield,
+          speed: this.speed,
+          gamename: this.gamename,
+          init_health: this.init_health
         });
         break;
 
@@ -269,7 +297,11 @@ ig.module(
           positionx: this.pos.x,
           positiony: this.pos.y,
           currentanimation: currentanimation,
-          gamename: this.gamename
+          health: this.health,
+          shield: this.shield,
+          speed: this.speed,
+          gamename: this.gamename,
+          init_health: this.init_health
         });
         break;
 
@@ -281,7 +313,11 @@ ig.module(
           positionx: this.pos.x,
           positiony: this.pos.y,
           currentanimation: currentanimation,
-          gamename: this.gamename
+          health: this.health,
+          shield: this.shield,
+          speed: this.speed,
+          gamename: this.gamename,
+          init_health: this.init_health
         });
         break;
 
@@ -293,7 +329,11 @@ ig.module(
           positionx: this.pos.x,
           positiony: this.pos.y,
           currentanimation: currentanimation,
-          gamename: this.gamename
+          health: this.health,
+          shield: this.shield,
+          speed: this.speed,
+          gamename: this.gamename,
+          init_health: this.init_health
         });
         break;
       }
@@ -320,7 +360,8 @@ ig.module(
           health: this.health,
           shield: this.shield,
           speed: this.speed,
-          gamename: this.gamename
+          gamename: this.gamename,
+          init_health: this.init_health
         });
       }
       this.nettimer = this.nettimer - 1;
@@ -590,7 +631,7 @@ ig.module(
 
   });
 
-  // Bullet
+  //Player Bullet
   EntityBullet = ig.Entity.extend({
 
     collides: ig.Entity.COLLIDES.PASSIVE,
@@ -640,16 +681,31 @@ ig.module(
       var player = ig.game.getEntitiesByType( EntityPlayer )[0];
       if (other.shield <= 0) {
         if (other.health - this.dmg <= 0) {
+
+          //Enemy recieves damage = health to prevent crash
+          other.receiveDamage( other.health, this );
+
+          //Player recieves credits and points
           player.creds = player.creds + other.init_health;
           player.points = player.points + other.init_health;
           player.kills = player.kills + 1;
+
+          // Set player kill streak
           player.kill_streaks = 0;
           for (i = 0; i <= player.kills - 3; i = i + 3) {
             player.kill_streaks = player.kill_streaks + 1;
           }
+
         }
+
+        //Enemy recieves damage
         other.receiveDamage( this.dmg, this );
+
+        //Player recieves points
         player.points = player.points + this.dmg;
+
+      } else if (other.shield - this.dmg <= 0) {
+        other.shield = 0;
       } else {
         other.shield = other.shield - this.dmg;
       }
@@ -667,7 +723,7 @@ ig.module(
 
   });
 
-  // Enemy Bullet
+  // Other player bullet
   EntityNetbullet = ig.Entity.extend({
 
     collides: ig.Entity.COLLIDES.PASSIVE,
@@ -735,20 +791,34 @@ ig.module(
       }
       if (other.shield <= 0) {
         if (other.health - this.dmg <= 0) {
+
+          //A player recieves damage = health to prevent crash
+          other.receiveDamage( other.health, this );
+
+          //Enemy recieves creds and points
           this.enemy.creds = this.enemy.creds + other.init_health;
           this.enemy.points = this.enemy.points + other.init_health;
           this.enemy.kills = this.enemy.kills + 1;
+
+          //Set enemy kill streak
           this.enemy.kill_streaks = 0;
           for (var c = 0; c <= this.enemy.kills - 3; c = c + 3) {
             this.enemy.kill_streaks = this.enemy.kill_streaks + 1;
           }
+
         }
+
+        //A player recieves damage
         other.receiveDamage( this.dmg, this );
+
+        //Enemy recieves points
         this.enemy.points = this.enemy.points + this.dmg;
+
+      } else if (other.shield - this.dmg <= 0) {
+        other.shield = 0;
       } else {
         other.shield = other.shield - this.dmg;
       }
-      other.shield_recharge = other.init_shield_recharge;
       this.kill();
     },
 

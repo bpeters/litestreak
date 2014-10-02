@@ -31,34 +31,13 @@ io.on('connection', function(socket){
   socket.on('recievedata', function (action, data) {
     if (action == 'move') {
       socket.broadcast.emit('playermove', data);
-      console.log(
-        Math.round(data.positionx)+ " - " +
-        Math.round(data.positiony) + " - " +
-        data.currentanimation + " - " +
-        data.gamename
-      );
+      console.log(data);
     } else if (action == 'shoot') {
       socket.broadcast.emit('playershoot', data);
-      console.log(
-        Math.round(data.positionx) + " - " +
-        Math.round(data.positiony) + " - " +
-        data.angle + " - " +
-        data.dmg + " - " +
-        data.desiredVel + " - " +
-        data.range + " - " +
-        data.gamename
-      );
+      console.log(data);
     } else if (action == 'sync') {
       socket.broadcast.emit('playersync', data);
-      console.log(
-        Math.round(data.positionx) + " - " +
-        Math.round(data.positiony) + " - " +
-        data.currentanimation + " - " +
-        data.health + " - " +
-        data.shield + " - " +
-        data.speed + " - " +
-        data.gamename
-      );
+      console.log(data);
     }
   });
 

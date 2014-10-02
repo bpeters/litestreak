@@ -82,14 +82,14 @@ MyGame = ig.Game.extend({
     if ( player.creds > 0 ){
       this.redbold.draw( "C  " + player.creds, 10, 165 );
     }
-    this.white.draw( "H  " + player.health, 10, 190 );
-    this.white.draw( "Sh " + player.shield, 10, 215 );
-    this.white.draw( "Sr " + player.shield_recharge, 10, 240 );
-    this.white.draw( "Sp " + player.speed, 10, 265 );
-    this.white.draw( "D  " + player.s1_dmg, 10, 290 );
-    this.white.draw( "V  " + player.s1_desiredVel, 10, 315 );
-    this.white.draw( "Ra " + player.s1_range, 10, 340 );
-    this.white.draw( "Re " + player.s1_recharge, 10, 365 );
+    this.white.draw( "1-H  " + player.health, 10, 190 );
+    this.white.draw( "2-Sh " + player.shield, 10, 215 );
+    this.white.draw( "3-ShR " + player.shield_recharge, 10, 240 );
+    this.white.draw( "4-Sp " + player.speed, 10, 265 );
+    this.white.draw( "5-D  " + player.s1_dmg, 10, 290 );
+    this.white.draw( "6-V  " + player.s1_desiredVel, 10, 315 );
+    this.white.draw( "7-Ra " + player.s1_range, 10, 340 );
+    this.white.draw( "8-Re " + player.s1_recharge, 10, 365 );
 
     player.messageboxtimer = player.messageboxtimer - 1;
 

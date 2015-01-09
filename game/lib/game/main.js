@@ -15,11 +15,11 @@ MyGame = ig.Game.extend({
   redbold: new ig.Font( 'media/red_bold.font.png' ),
 
   minimap : {
-    size : 200, //128x128px on the screen
+    size : window.innerHeight / 3, //128x128px on the screen
     c : 16, // Compression factor, for a square map of 16x128pixel .
     //Absolute positions on the screen
     x: 0,
-    y: 600 - 200
+    y: window.innerHeight - (window.innerHeight / 3)
   },
 
   init: function() {
@@ -38,7 +38,7 @@ MyGame = ig.Game.extend({
     ig.input.bind( ig.KEY._7, 'range');
     ig.input.bind( ig.KEY._8, 'recharge');
     this.loadLevel( LevelGameLevel );
-    this.spawnEntity(EntityPlayer, 400, 300);
+    this.spawnEntity(EntityPlayer, window.innerWidth / 2, window.innerHeight / 2);
   },
 
   update: function() {
@@ -94,7 +94,7 @@ MyGame = ig.Game.extend({
     player.messageboxtimer = player.messageboxtimer - 1;
 
     if( player.messageboxtimer < 1 ) {
-      player.messageboxtimer = 50;
+      player.messageboxtimer = 30;
       var newtext = "";
       var newsplit = player.messagebox.split("\n");
       for(var i = 0; i < newsplit.length; i++) {
@@ -110,6 +110,6 @@ MyGame = ig.Game.extend({
   }
 });
 
-ig.main( '#canvas', MyGame, 60, 800, 600, 1 );
+ig.main( '#canvas', MyGame, 60, window.innerWidth, window.innerHeight, 1 );
 
 });

@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Litestreak</title>
+  <title>Lite Streak</title>
   <LINK href="/stylesheets/main.css" rel="stylesheet" type="text/css">
   <script src="/lib/impact/impact.js"></script>
   <script src="/lib/game/main.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script>
     var socket = io();
-    var namerand  = Math.floor(Math.random()*999);
+    var namerand  = Math.floor(Math.random()*9999);
     var playername = "player" + namerand;
 
     socket.on('addplayer', function (playerlist, otherplayername) {
@@ -16,7 +16,7 @@
       player.messagebox = player.messagebox + '\n' + otherplayername + ' joined';
       for(var i = 0; i < playerlist.length; i++) {
         if(player.gamename != playerlist[i]) {
-          ig.game.spawnEntity( EntityOtherplayer, 400, 300, {gamename:playerlist[i]} );
+          ig.game.spawnEntity( EntityOtherplayer, 400, 500, {gamename: playerlist[i]} );
         }
       }
     });

@@ -4,6 +4,7 @@
   "description": "HTML5 Top-Down MOBA Shooter",
   "dependencies": {
     "express": "^4.4.3",
+    "lodash": "^2.4.1",
     "socket.io": "^1.0.5"
   },
   "subdomain": "www.litestreak.com",

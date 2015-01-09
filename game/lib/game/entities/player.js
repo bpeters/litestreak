@@ -54,9 +54,14 @@ ig.module(
 
       this.s1_recharge = this.s1_init_recharge;
 
+      console.log(this.gamename);
       socket.emit('initializeplayer', this.gamename);
 
       this.parent( x, y, settings );
+    },
+
+    kill: function() {
+      socket.emit('killplayer');
     },
 
     update: function() {
@@ -482,7 +487,6 @@ ig.module(
     type: ig.Entity.TYPE.B,
 
     name: "otherplayer",
-    gamename: "",
     animation: 0,
 
     init_health: 32,

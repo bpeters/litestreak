@@ -81,6 +81,9 @@ ig.module(
           this.init_health = this.health;
           this.creds = this.creds - 2;
 
+          //update range
+          this.s1_range = this.s1_range + 2;
+
           //update size
           this.setSize();
 
@@ -395,6 +398,7 @@ ig.module(
 
     draw: function() {
       this.parent();
+
       //draw player
       switch (currentanimation) {
         case 9:
@@ -546,6 +550,7 @@ ig.module(
 
     draw: function() {
       this.parent();
+
       //draw player
       switch (this.animation) {
         case 9:
@@ -690,6 +695,7 @@ ig.module(
       this.parent( res );
 
       var player = ig.game.getEntitiesByType( EntityPlayer )[0];
+
       if( res.collision.x || res.collision.y ) {
         this.kill();
       } else if (this.distanceTo(player) > this.range) {

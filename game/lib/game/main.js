@@ -57,6 +57,7 @@ MyGame = ig.Game.extend({
   draw: function() {
     this.parent();
 
+    //Draw MiniMap
     var players = this.getEntitiesByType(EntityOtherplayer);
     var player = this.getEntitiesByType( EntityPlayer )[0];
     var ctx = ig.system.context;
@@ -68,6 +69,7 @@ MyGame = ig.Game.extend({
                  this.minimap.y,
                  this.minimap.x+this.minimap.size,
                  this.minimap.y+this.minimap.size);
+
     // Draw Other Players on MiniMap
     for (i=0;i<players.length;i++) {
         x = players[i].pos.x * s / this.minimap.c + this.minimap.x;
@@ -75,7 +77,10 @@ MyGame = ig.Game.extend({
         size = players[i].size.x * s / this.minimap.c;
         ctx.fillStyle = "rgb(255,0,0)";
         ctx.fillRect(x,y,size,size);
+
+        this.redbold.draw(players[i].gamename, x - 10, y - 20 );
     }
+
     // Draw Client Player on MiniMap
     x = player.pos.x * s / this.minimap.c + this.minimap.x;
     y = player.pos.y * s / this.minimap.c + this.minimap.y;
@@ -83,6 +88,7 @@ MyGame = ig.Game.extend({
     ctx.fillStyle = "rgb(0,0,0)";
     ctx.fillRect(x,y,size,size);
     ctx.restore();
+    this.white.draw(player.gamename, x - 10, y - 20  );
 
     //Draw Player Stats
     this.white.draw( "Lite Streaks:        " + player.kill_streaks, 20, 50 );
@@ -100,8 +106,8 @@ MyGame = ig.Game.extend({
     this.white.draw( "7 - Range            " + player.s1_range, 20, 340 );
     this.white.draw( "8 - Recharge         " + player.s1_recharge, 20, 365 );
 
+    //Player Messages
     player.messageboxtimer = player.messageboxtimer - 1;
-
     if( player.messageboxtimer < 1 ) {
       player.messageboxtimer = 100;
       var newtext = "";
@@ -113,8 +119,13 @@ MyGame = ig.Game.extend({
       }
     player.messagebox = newtext;
     }
-
     this.white.draw( player.messagebox, 20, -10 );
+
+    //Display Intro Text
+    var intro = true;
+    if (intro) {
+      this.redbold.draw("Welcome To Lite Streak", (window.innerWidth / 2) - 100, 20 );
+    }
 
   }
 });

@@ -15,14 +15,16 @@ MyGame = ig.Game.extend({
   redbold: new ig.Font( 'media/red_bold.font.png' ),
 
   minimap : {
-    size : window.innerHeight / 3, //128x128px on the screen
+    size : 10, //128x128px on the screen
     c : 16, // Compression factor, for a square map of 16x128pixel .
     //Absolute positions on the screen
     x: 0,
-    y: window.innerHeight - (window.innerHeight / 3)
+    y: 0
   },
 
   init: function() {
+
+    //Handle Client Input
     ig.input.bind( ig.KEY.W, 'up' );
     ig.input.bind( ig.KEY.S, 'down' );
     ig.input.bind( ig.KEY.A, 'left' );
@@ -37,8 +39,14 @@ MyGame = ig.Game.extend({
     ig.input.bind( ig.KEY._6, 'vel');
     ig.input.bind( ig.KEY._7, 'range');
     ig.input.bind( ig.KEY._8, 'recharge');
+
+    //Load Level
     this.loadLevel( LevelGameLevel );
-    this.spawnEntity(EntityPlayer, window.innerWidth / 2, window.innerHeight / 2);
+
+    //Start Client In Random Location
+    var startx = Math.floor(Math.random()*9999);
+    var starty = Math.floor(Math.random()*9999);
+    this.spawnEntity(EntityPlayer, startx, starty);
   },
 
   update: function() {
@@ -55,41 +63,42 @@ MyGame = ig.Game.extend({
     var s = ig.system.scale;
     var x,y,size;
     ctx.save();
-    ctx.fillStyle = "rgba(100, 100, 100, 0.1)";
+    ctx.fillStyle = "rgba(150, 150, 150, 0.1)";
     ctx.fillRect(this.minimap.x,
                  this.minimap.y,
                  this.minimap.x+this.minimap.size,
                  this.minimap.y+this.minimap.size);
     // Draw Other Players on MiniMap
     for (i=0;i<players.length;i++) {
-        x = players[i].pos.x * s / this.minimap.c +this.minimap.x;
-        y = players[i].pos.y * s / this.minimap.c +this.minimap.y;
+        x = players[i].pos.x * s / this.minimap.c + this.minimap.x;
+        y = players[i].pos.y * s / this.minimap.c + this.minimap.y;
         size = players[i].size.x * s / this.minimap.c;
-        ctx.fillStyle = "rgb(0,0,0)";
+        ctx.fillStyle = "rgb(255,0,0)";
         ctx.fillRect(x,y,size,size);
     }
     // Draw Client Player on MiniMap
-    x = player.pos.x * s / this.minimap.c +this.minimap.x;
-    y = player.pos.y * s / this.minimap.c +this.minimap.y;
+    x = player.pos.x * s / this.minimap.c + this.minimap.x;
+    y = player.pos.y * s / this.minimap.c + this.minimap.y;
     size = player.size.x * s / this.minimap.c;
     ctx.fillStyle = "rgb(0,0,0)";
     ctx.fillRect(x,y,size,size);
     ctx.restore();
 
-    this.white.draw( "Lite Streaks:        " + player.kill_streaks, 10, 50 );
-    this.white.draw( "Kills:               " + player.kills, 10, 75 );
-    this.white.draw( "Points:              " + player.points, 10, 100 );
+    //Draw Player Stats
+    this.white.draw( "Lite Streaks:        " + player.kill_streaks, 20, 50 );
+    this.white.draw( "Kills:               " + player.kills, 20, 75 );
+    this.white.draw( "Points:              " + player.points, 20, 100 );
     if ( player.creds > 0 ){
-  this.redbold.draw( "Credits:             " + player.creds, 10, 165 );
+  this.redbold.draw( "Credits:             " + player.creds, 20, 165 );
     }
-    this.white.draw( "1 - Health:          " + player.health, 10, 190 );
-    this.white.draw( "2 - Shield:          " + player.shield, 10, 215 );
-    this.white.draw( "3 - Shield Recharge: " + player.shield_recharge, 10, 240 );
-    this.white.draw( "4 - Speed:           " + player.speed, 10, 265 );
-    this.white.draw( "5 - Damage:          " + player.s1_dmg, 10, 290 );
-    this.white.draw( "6 - Velocity:        " + player.s1_desiredVel, 10, 315 );
-    this.white.draw( "7 - Range            " + player.s1_range, 10, 340 );
-    this.white.draw( "8 - Recharge         " + player.s1_recharge, 10, 365 );
+    this.white.draw( "1 - Health:          " + player.health, 20, 190 );
+    this.white.draw( "2 - Shield:          " + player.shield, 20, 215 );
+    this.white.draw( "3 - Shield Recharge: " + player.shield_recharge, 20, 240 );
+    this.white.draw( "4 - Speed:           " + player.speed, 20, 265 );
+    this.white.draw( "5 - Damage:          " + player.s1_dmg, 20, 290 );
+    this.white.draw( "6 - Velocity:        " + player.s1_desiredVel, 20, 315 );
+    this.white.draw( "7 - Range            " + player.s1_range, 20, 340 );
+    this.white.draw( "8 - Recharge         " + player.s1_recharge, 20, 365 );
 
     player.messageboxtimer = player.messageboxtimer - 1;
 
@@ -105,7 +114,7 @@ MyGame = ig.Game.extend({
     player.messagebox = newtext;
     }
 
-    this.white.draw( player.messagebox, 10, -10 );
+    this.white.draw( player.messagebox, 20, -10 );
 
   }
 });

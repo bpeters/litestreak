@@ -69,10 +69,14 @@
       }
     });
 
-    socket.on('message', function (data) {
+    socket.on('message', function (data, type) {
       var player = ig.game.getEntitiesByType( EntityPlayer )[0];
-      if(player) {
-        player.messagebox = player.messagebox + '\n' + data + ' has left';
+      if (player) {
+        if (type ===' left') {
+          player.messagebox = player.messagebox + '\n' + data + ' has left';
+        } else if (type === 'died') {
+          player.messagebox = player.messagebox + '\n' + data + ' has died';
+        }
       }
     });
 

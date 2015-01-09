@@ -43,7 +43,7 @@ io.on('connection', function(socket){
       console.log(socket.clientname + " has died");
       playerlist = _.difference(playerlist, [socket.clientname]);
       socket.broadcast.emit('removeplayer',socket.clientname);
-      socket.broadcast.emit('message',socket.clientname);
+      socket.broadcast.emit('message',socket.clientname, 'died');
     }
   });
 
@@ -52,7 +52,7 @@ io.on('connection', function(socket){
       console.log(socket.clientname + " has left");
       playerlist = _.difference(playerlist, [socket.clientname]);
       socket.broadcast.emit('removeplayer',socket.clientname);
-      socket.broadcast.emit('message',socket.clientname);
+      socket.broadcast.emit('message',socket.clientname, 'left');
     }
   });
 

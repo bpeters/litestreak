@@ -41,18 +41,16 @@ ig.module(
     s1_dmg: 4,
     s1_desiredVel: 300,
     s1_range: 200,
-    s1_init_recharge: 10,
-    s1_recharge: 0,
+    s1_init_recharge: 50,
+    s1_recharge: 50,
     s1_type: 0,
 
 
     init: function( x, y, settings ) {
-      this.size.x = this.health;
-      this.size.y = this.health;
+      this.size.x = this.health + (this.shield + this.health/2);
+      this.size.y = this.health + (this.shield + this.health/2);
       this.x = x;
       this.y = y;
-
-      this.s1_recharge = this.s1_init_recharge;
 
       console.log(this.gamename);
       socket.emit('initializeplayer', this.gamename);
@@ -64,11 +62,17 @@ ig.module(
       socket.emit('killplayer');
     },
 
+    setSize: function() {
+      this.size.x = this.health + (this.shield + this.health/2);
+      this.size.y = this.health + (this.shield + this.health/2);
+    },
+
     update: function() {
 
-      //Set player data
-      var data = {
-      };
+      //make sure player actually dies
+      if (this.health <= 0) {
+        this.kill();
+      }
 
       //Spending Creds
       if ( this.creds > 0 ) {
@@ -76,10 +80,18 @@ ig.module(
           this.health = this.health + 2;
           this.init_health = this.health;
           this.creds = this.creds - 2;
+
+          //update size
+          this.setSize();
+
         } else if( ig.input.pressed('shield') ) {
           this.init_shield = this.init_shield + 1;
           this.shield = this.shield + 1;
           this.creds = this.creds - 2;
+
+          //update size
+          this.setSize();
+
         } else if( ig.input.pressed('shield_recharge') ) {
           if ( this.init_shield_recharge > 100 ) {
             this.init_shield_recharge = this.init_shield_recharge - 4;
@@ -91,24 +103,25 @@ ig.module(
         } else if( ig.input.pressed('dmg') ) {
           this.s1_dmg = this.s1_dmg + 1;
           this.s1_desiredVel = this.s1_desiredVel - 2;
-          this.s1_init_recharge = this.s1_init_recharge + 5;
+          this.s1_init_recharge = this.s1_init_recharge + 1;
           this.creds = this.creds - 2;
         } else if( ig.input.pressed('vel') ) {
           this.s1_desiredVel = this.s1_desiredVel + 2;
-          this.s1_init_recharge = this.s1_init_recharge + 5;
+          this.s1_init_recharge = this.s1_init_recharge + 1;
           this.creds = this.creds - 2;
         } else if( ig.input.pressed('range') ) {
           this.s1_range = this.s1_range + 10;
-          this.s1_init_recharge = this.s1_init_recharge + 5;
+          this.s1_init_recharge = this.s1_init_recharge + 1;
           this.creds = this.creds - 2;
         } else if( ig.input.pressed('recharge') ) {
           this.s1_init_recharge = this.s1_init_recharge - 1;
+          this.s1_recharge = this.s1_init_recharge;
           this.creds = this.creds - 2;
         }
       }
 
       // Shooting
-      if( this.s1_recharge >= this.s1_init_recharge ) {
+      if( this.s1_recharge === this.s1_init_recharge ) {
         if( ig.input.state('shoot1') ) {
           var mx = (ig.input.mouse.x + ig.game.screen.x);
           var my = (ig.input.mouse.y + ig.game.screen.y);
@@ -129,6 +142,20 @@ ig.module(
       }
       if ( this.s1_recharge < this.s1_init_recharge ) {
         this.s1_recharge = this.s1_recharge + 1;
+      }
+
+      // Recharge Shield
+      if( this.shield_recharge < 1 ) {
+        for(var i = 0; this.shield < this.init_shield; i++) {
+          this.shield = this.shield + 1;
+
+          //update size
+          this.setSize();
+        }
+        this.shield_recharge = this.init_shield_recharge;
+      }
+      if ( this.shield < this.init_shield) {
+        this.shield_recharge = this.shield_recharge - 1;
       }
 
       // Movement
@@ -225,7 +252,8 @@ ig.module(
           health: this.health,
           shield: this.shield,
           speed: this.speed,
-          gamename: this.gamename
+          gamename: this.gamename,
+          init_health: this.init_health
         });
         break;
 
@@ -240,7 +268,8 @@ ig.module(
           health: this.health,
           shield: this.shield,
           speed: this.speed,
-          gamename: this.gamename
+          gamename: this.gamename,
+          init_health: this.init_health
         });
         break;
 
@@ -255,7 +284,8 @@ ig.module(
           health: this.health,
           shield: this.shield,
           speed: this.speed,
-          gamename: this.gamename
+          gamename: this.gamename,
+          init_health: this.init_health
         });
         break;
 
@@ -270,7 +300,8 @@ ig.module(
           health: this.health,
           shield: this.shield,
           speed: this.speed,
-          gamename: this.gamename
+          gamename: this.gamename,
+          init_health: this.init_health
         });
         break;
 
@@ -339,18 +370,6 @@ ig.module(
         break;
       }
 
-      // Recharge Shield
-      if( this.shield_recharge < 1 ) {
-        for(var i = 0; this.shield < this.init_shield; i++) {
-          this.shield = this.shield + 1;
-        }
-        this.shield_recharge = this.init_shield_recharge;
-      }
-      if ( this.shield < this.init_shield) {
-        this.shield_recharge = this.shield_recharge - 1;
-      }
-
-
       //Sync Player Details
       if(this.nettimer < 1) {
         this.nettimer = 100;
@@ -369,7 +388,7 @@ ig.module(
 
       this.parent();
 
-      //screen movement
+      //screen movement (Camera)
       ig.game.screen.x = this.pos.x - ig.system.width/2;
       ig.game.screen.y = this.pos.y - ig.system.height/2;
     },
@@ -461,7 +480,7 @@ ig.module(
         }
 
       //draw shield
-      if (this.health  > 0 || this.shield > 0) {
+      if (this.health > 0 || this.shield > 0) {
         ig.system.context.globalAlpha = 0.8;
         ig.system.context.strokeStyle = "rgb(0,0,0)";
         ig.system.context.lineWidth = 1;
@@ -507,12 +526,12 @@ ig.module(
     s1_dmg: 4,
     s1_desiredVel: 300,
     s1_range: 200,
-    s1_recharge: 100,
+    s1_recharge: 50,
     s1_type: 0,
 
     init: function( x, y, settings ) {
-      this.size.x = this.health;
-      this.size.y = this.health;
+      this.size.x = this.health + (this.shield + this.health/2);
+      this.size.y = this.health + (this.shield + this.health/2);
       this.parent( x, y, settings );
     },
 
@@ -612,7 +631,7 @@ ig.module(
         }
 
       //draw shield
-      if (this.health  > 0 || this.shield > 0) {
+      if (this.health > 0 || this.shield > 0) {
         ig.system.context.globalAlpha = 0.8;
         ig.system.context.strokeStyle = "rgb(0,0,0)";
         ig.system.context.lineWidth = 1;
@@ -681,14 +700,15 @@ ig.module(
     check: function( other ) {
       var player = ig.game.getEntitiesByType( EntityPlayer )[0];
       if (other.shield <= 0) {
+
         if (other.health - this.dmg <= 0) {
 
           //Enemy recieves damage = health to prevent crash
           other.receiveDamage( other.health, this );
 
           //Player recieves credits and points
-          player.creds = player.creds + other.init_health;
-          player.points = player.points + other.init_health;
+          player.creds = player.creds + other.init_health * player.kill_streaks;
+          player.points = player.points + other.init_health * player.kill_streaks;
           player.kills = player.kills + 1;
 
           // Set player kill streak
@@ -697,13 +717,13 @@ ig.module(
             player.kill_streaks = player.kill_streaks + 1;
           }
 
+        } else {
+          //Enemy recieves damage
+          other.receiveDamage( this.dmg, this );
+
+          //Player recieves points
+          player.points = player.points + this.dmg * player.kill_streaks;
         }
-
-        //Enemy recieves damage
-        other.receiveDamage( this.dmg, this );
-
-        //Player recieves points
-        player.points = player.points + this.dmg;
 
       } else if (other.shield - this.dmg <= 0) {
         other.shield = 0;
@@ -764,8 +784,6 @@ ig.module(
 
     update: function() {
       this.parent();
-
-
     },
 
     handleMovementTrace: function( res ) {
@@ -792,29 +810,12 @@ ig.module(
       }
       if (other.shield <= 0) {
         if (other.health - this.dmg <= 0) {
-
           //A player recieves damage = health to prevent crash
           other.receiveDamage( other.health, this );
-
-          //Enemy recieves creds and points
-          this.enemy.creds = this.enemy.creds + other.init_health;
-          this.enemy.points = this.enemy.points + other.init_health;
-          this.enemy.kills = this.enemy.kills + 1;
-
-          //Set enemy kill streak
-          this.enemy.kill_streaks = 0;
-          for (var c = 0; c <= this.enemy.kills - 3; c = c + 3) {
-            this.enemy.kill_streaks = this.enemy.kill_streaks + 1;
-          }
-
+        } else {
+          //A player recieves damage
+          other.receiveDamage( this.dmg, this );
         }
-
-        //A player recieves damage
-        other.receiveDamage( this.dmg, this );
-
-        //Enemy recieves points
-        this.enemy.points = this.enemy.points + this.dmg;
-
       } else if (other.shield - this.dmg <= 0) {
         other.shield = 0;
       } else {
@@ -822,7 +823,6 @@ ig.module(
       }
       this.kill();
     },
-
 
     draw: function() {
       ig.system.context.fillStyle = "rgb(0,0,0)";

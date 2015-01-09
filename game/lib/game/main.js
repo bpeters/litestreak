@@ -76,25 +76,25 @@ MyGame = ig.Game.extend({
     ctx.fillRect(x,y,size,size);
     ctx.restore();
 
-    this.white.draw( "P  " + player.points, 10, 50 );
-    this.white.draw( "Ks " + player.kill_streaks, 10, 75 );
-    this.white.draw( "K  " + player.kills, 10, 100 );
+    this.white.draw( "Lite Streaks:        " + player.kill_streaks, 10, 50 );
+    this.white.draw( "Kills:               " + player.kills, 10, 75 );
+    this.white.draw( "Points:              " + player.points, 10, 100 );
     if ( player.creds > 0 ){
-      this.redbold.draw( "C  " + player.creds, 10, 165 );
+  this.redbold.draw( "Credits:             " + player.creds, 10, 165 );
     }
-    this.white.draw( "1-H  " + player.health, 10, 190 );
-    this.white.draw( "2-Sh " + player.shield, 10, 215 );
-    this.white.draw( "3-ShR " + player.shield_recharge, 10, 240 );
-    this.white.draw( "4-Sp " + player.speed, 10, 265 );
-    this.white.draw( "5-D  " + player.s1_dmg, 10, 290 );
-    this.white.draw( "6-V  " + player.s1_desiredVel, 10, 315 );
-    this.white.draw( "7-Ra " + player.s1_range, 10, 340 );
-    this.white.draw( "8-Re " + player.s1_recharge, 10, 365 );
+    this.white.draw( "1 - Health:          " + player.health, 10, 190 );
+    this.white.draw( "2 - Shield:          " + player.shield, 10, 215 );
+    this.white.draw( "3 - Shield Recharge: " + player.shield_recharge, 10, 240 );
+    this.white.draw( "4 - Speed:           " + player.speed, 10, 265 );
+    this.white.draw( "5 - Damage:          " + player.s1_dmg, 10, 290 );
+    this.white.draw( "6 - Velocity:        " + player.s1_desiredVel, 10, 315 );
+    this.white.draw( "7 - Range            " + player.s1_range, 10, 340 );
+    this.white.draw( "8 - Recharge         " + player.s1_recharge, 10, 365 );
 
     player.messageboxtimer = player.messageboxtimer - 1;
 
     if( player.messageboxtimer < 1 ) {
-      player.messageboxtimer = 30;
+      player.messageboxtimer = 100;
       var newtext = "";
       var newsplit = player.messagebox.split("\n");
       for(var i = 0; i < newsplit.length; i++) {
